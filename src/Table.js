@@ -43,7 +43,9 @@ const EditableCell = ({
   style,
   updateData,
   isEditing,
-  setIsEditing
+  setIsEditing,
+  isHeader,
+  sortByColumn
 }) => {
   const [isEditable, setIsEditable] = useState(false);
 
@@ -59,13 +61,13 @@ const EditableCell = ({
     setTimeout(() => setIsEditing(false), 150);
     updateData(newValue);
   };
-  // console.log(style);
+
   return (
     <div
       style={style}
       className='cell-container'
-      onClick={handleCellClick}>
-      {isEditable ? (
+      onClick={isHeader ? sortByColumn : handleCellClick}>
+      {!isHeader && isEditable ? (
         <InputCell
           style={style}
           updateData={handleDataUpdated}
@@ -80,7 +82,7 @@ const EditableCell = ({
 };
 
 
-const Table = ({ data, updateData }) => {
+const Table = ({ data, updateData, sortData }) => {
   const gridData = data;
   console.log(gridData);
   const [isEditing, setIsEditing] = useState(false);
@@ -99,6 +101,10 @@ const Table = ({ data, updateData }) => {
       backgroundColor: "#f3f4fb"
     };
 
+    const sortByColumn = () => {
+      sortData(columnIndex);
+    };
+
     return (
       <CellMeasurer
         cache={cache}
@@ -110,8 +116,10 @@ const Table = ({ data, updateData }) => {
         <EditableCell
           key={key}
           style={rowIndex === 0 ? headerStyle : cellStyle}
+          isHeader={rowIndex === 0}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
+          sortByColumn={sortByColumn}
           updateData={newValue => updateData(newValue, rowIndex, columnIndex)}
         >
           {gridData[rowIndex][columnIndex]}

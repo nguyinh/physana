@@ -12,11 +12,6 @@ const App = () => {
   const [ data, setData ] = useState([]);
 
   const formatCSVData = data => {
-    // const headers = data.splice(0, 1)[0].filter(header => header !== '');
-    // setHeaders(headers);
-    // const headerLength = headers.length;
-    // const formatted = data.map(row => row.splice(0, headerLength));
-
     data[0] = data[0].filter(header => header !== '');
     const headerLength = data[0].length;
     const formatted = data.map(row => row.splice(0, headerLength));
@@ -37,15 +32,32 @@ const App = () => {
     );
   };
 
+  const sortData = (i) => {
+    console.log('sort', i);
+    const sorted = [...data].sort((a, b) => {
+      return a[i] < b[i]
+        ? 1
+        : a[i] > b[i]
+          ? -1
+          : 0;
+    });
+    console.log(sorted);
+    setData(sorted);
+  };
+
   return (
     <div className="App">
       <CSVReader
         onFileLoaded={data => formatCSVData(data)}
         parserOptions={{skipEmptyLines: true}}/>
+
+      <button onClick={sortData}>sort</button>
+
       <div style={{height: '1000px'}}>
         <Table
           data={data.length ? data : mockData}
           updateData={updateData}
+          sortData={sortData}
         />
       </div>
     </div>
