@@ -23,10 +23,12 @@ const App = () => {
       <CSVReader
         onFileLoaded={data => formatCSVData(data)}
         parserOptions={{skipEmptyLines: true}}/>
-      <Table 
-        headers={headers}
-        data={data}
-      />
+        <div style={{height: '1000px'}}>
+          <Table
+            headers={headers}
+            data={data}
+          />
+        </div>
     </div>
   );
 }
