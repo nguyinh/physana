@@ -7,6 +7,13 @@ const uglyString = 'mesriAge:mesriPoids:mesriTaille:mesriPds:mesriUnite:PdsRef:T
 
 const mockData = uglyString.split(';').map(row => row.split(':'));
 
+const formatCell = cell => {
+  const parsed = parseInt(cell);
+  return isNaN(parsed) 
+    ? cell
+    : parsed;
+}
+
 const App = () => {
   // const [ headers, setHeaders ] = useState([]);
   const [ data, setData ] = useState([]);
@@ -14,7 +21,9 @@ const App = () => {
   const formatCSVData = data => {
     data[0] = data[0].filter(header => header !== '');
     const headerLength = data[0].length;
-    const formatted = data.map(row => row.splice(0, headerLength));
+    let formatted = data.map(row => row.splice(0, headerLength));
+    formatted = formatted.map(row => row.map(cell => formatCell(cell)));
+    console.log(formatted);
     setData(formatted);
   };
 
@@ -32,17 +41,17 @@ const App = () => {
     );
   };
 
-  const sortData = (i) => {
-    console.log('sort', i);
-    const sorted = [...data].sort((a, b) => {
+  const sortData = i => {
+    // console.log('sort', i);
+    const sorted = [...data.splice(1)].sort((a, b) => {
       return a[i] < b[i]
         ? 1
         : a[i] > b[i]
           ? -1
           : 0;
     });
-    console.log(sorted);
-    setData(sorted);
+    // console.log(sorted);
+    setData([ data[0], ...sorted ]);
   };
 
   return (
