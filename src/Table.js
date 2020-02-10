@@ -83,12 +83,41 @@ const EditableCell = ({
 };
 
 
+const HeaderCell = ({
+  children: value,
+  style,
+  sortByColumn,
+  columnIndex
+}) => {
+  const [ sortDirection, setSortDirection ] = useState(null);
+
+  const handleSort = () => {
+    setSortDirection(old =>
+      old === null || old === 'DESC'
+        ? 'ASC'
+        : 'DESC'
+    );
+    sortByColumn(columnIndex, sortDirection);
+  };
+
+  return (
+    <div
+      style={style}
+      className='cell-container'
+      onClick={handleSort}>
+      <span className='cell-value'>{value}</span>
+    </div>
+  );
+};
+
+
 const Table = ({ data, updateData, sortData }) => {
   const gridData = data;
   console.log(gridData);
   const [isEditing, setIsEditing] = useState(false);
 
   const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
+
     const cellStyle = {
       ...style,
       backgroundColor: rowIndex % 2 && "#fafafc",
@@ -102,10 +131,6 @@ const Table = ({ data, updateData, sortData }) => {
       backgroundColor: "#f3f4fb"
     };
 
-    const sortByColumn = () => {
-      sortData(columnIndex);
-    };
-
     return (
       <CellMeasurer
         cache={cache}
@@ -114,17 +139,20 @@ const Table = ({ data, updateData, sortData }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <EditableCell
-          key={key}
-          style={rowIndex === 0 ? headerStyle : cellStyle}
-          isHeader={rowIndex === 0}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-          sortByColumn={sortByColumn}
-          updateData={newValue => updateData(newValue, rowIndex, columnIndex)}
-        >
-          {gridData[rowIndex][columnIndex]}
-        </EditableCell>
+        {rowIndex === 0
+          ? <HeaderCell style={headerStyle} sortByColumn={sortData} columnIndex={columnIndex}>
+            {gridData[rowIndex][columnIndex]}
+          </HeaderCell>
+          : <EditableCell
+            key={key}
+            style={cellStyle}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            updateData={newValue => updateData(newValue, rowIndex, columnIndex)}
+          >
+            {gridData[rowIndex][columnIndex]}
+          </EditableCell>
+        }
       </CellMeasurer>
     );
   };

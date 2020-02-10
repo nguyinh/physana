@@ -30,15 +30,15 @@ const App = () => {
     );
   };
 
-  const sortData = i => {
+  const sortData = (i, dir) => {
     // console.log('sort', i);
-    const sorted = [...data.splice(1)].sort((a, b) => {
-      return a[i] < b[i]
-        ? 1
+    const sorted = [...data.splice(1)].sort((a, b) => (
+      a[i] < b[i]
+        ? dir === 'ASC' ? 1 : -1
         : a[i] > b[i]
-          ? -1
-          : 0;
-    });
+          ? dir === 'ASC' ? -1 : 1
+          : 0
+    ));
     // console.log(sorted);
     setData([ data[0], ...sorted ]);
   };
