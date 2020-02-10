@@ -31,7 +31,7 @@ const DynamicCell = ({ children, style }) => {
       style={{ ...style, height: 'unset' }}
       // className='cell-input'
       autoFocus
-      onBlur={() => false && setIsEditable(false)}>
+      onBlur={() => setIsEditable(false)}>
 
       </input>
     : <div style={style} onClick={() => setIsEditable(true)}>
@@ -39,22 +39,30 @@ const DynamicCell = ({ children, style }) => {
       </div>
 };
 
-const cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
-  console.log(style);
-  return (
-    <DynamicCell key={key} style={style}>
-      {list[rowIndex][columnIndex]}
-    </DynamicCell>
-  );
-}
 
-const Table = () => {
+
+const Table = ({ headers, data }) => {
+
+  console.log(headers);
+
+  const gridData = [ headers, ...data ];
+  console.log(gridData);
+  
+  const cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
+    // console.log(style);
+    return gridData.length !== 1 && (
+      <DynamicCell key={key} style={style}>
+        {gridData[rowIndex][columnIndex]}
+      </DynamicCell>
+    );
+  }
+
   return <Grid
     cellRenderer={cellRenderer}
-    columnCount={list[0].length}
+    columnCount={gridData[0].length}
     columnWidth={100}
     height={300}
-    rowCount={list.length}
+    rowCount={gridData.length}
     rowHeight={30}
     width={1000}
     style={{

@@ -1,25 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Table from './Table';
 import './App.css';
+import CSVReader from 'react-csv-reader';
 
-function App() {
-  const handleFile = (e) => {
-    // console.log(e);
-    // console.log(e.target.files[0]);
-    // console.log(e.target.result);
-    const reader = new FileReader();
-    reader.onloadend = function (e) {
-      console.log(reader.result)
-      // console.log(e.target.result);
-    }
-    reader.readAsText(e.target.files[0]);
-    // console.log(data);dz
+const App = () => {
+  const [ headers, setHeaders ] = useState([]);
+  const [ data, setData ] = useState([]);
+
+  const formatCSVData = data => {
+    const headers = data.splice(0, 1)[0].filter(header => header !== '');
+    setHeaders(headers);
+    const headerLength = headers.length;
+    // console.log(headers);
+    // console.log(headerLength);
+    const formatted = data.map(row => row.splice(0, headerLength));
+    setData(formatted);
+    // console.log(formatted);
   };
 
   return (
     <div className="App">
-      <input type='file' onChange={handleFile}/>
-      <Table/>
+      <CSVReader
+        onFileLoaded={data => formatCSVData(data)}
+        parserOptions={{skipEmptyLines: true}}/>
+      <Table 
+        headers={headers}
+        data={data}
+      />
     </div>
   );
 }
