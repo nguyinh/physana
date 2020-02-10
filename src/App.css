@@ -37,6 +37,28 @@
   }
 } */
 
+.cell-value {
+  text-align: center;
+}
+
 .cell-input {
-  height: unset;
+  border: none;
+  padding: 0;
+  height: 90%;
+  width: 90%;
+  border-radius: 5px;
+  background: #211fcf5e;
+  color: white;
+  text-align: center;
+  font-size: initial;
+  outline-width: 0;
+}
+
+.cell-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* border-right: 1px solid #e0e0e0; */
+  /* border-bottom: 1px solid #e0e0e0; */
 }
