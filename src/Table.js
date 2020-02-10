@@ -21,21 +21,30 @@ const InputCell = ({ initialValue, style, updateData }) => {
     onChange={onChange}/>
 };
 
-const EditableCell = ({ children, style, updateData }) => {
+const EditableCell = ({ children, style, updateData, isEditing, setIsEditing }) => {
   const [ isEditable, setIsEditable ] = useState(false);
+
+  const handleCellClick = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      setIsEditable(true);
+    }
+  };
+
+  const handleDataUpdated = newValue => {
+    setIsEditable(false);
+    setTimeout(() => setIsEditing(false), 100);
+    updateData(newValue);
+  };
 
   return <div
     style={style}
     className={styles.cell}
-    onClick={() => setIsEditable(true)}>
+    onClick={handleCellClick}>
     {isEditable
       ? <InputCell
           style={{height: style.height, width: style.width, background: style.background }}
-          updateData={newValue => {
-            setIsEditable(false);
-            console.log(newValue)
-            updateData(newValue);
-          }}
+          updateData={handleDataUpdated}
           initialValue={children}/>
       : children
     }
@@ -48,11 +57,10 @@ const cache = new CellMeasurerCache({
   fixedHeight: true
 });
 
-const Table = ({ headers, data, updateData }) => {
+const Table = ({ data, updateData }) => {
   const gridData = data;
-  console.log(gridData);
-  // const gridData = [ headers, ...data ];
-  console.log(gridData);
+
+  const [ isEditing, setIsEditing ] = useState(false);
   
   const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
     const cellStyle = {
@@ -79,6 +87,8 @@ const Table = ({ headers, data, updateData }) => {
         <EditableCell 
           key={key}
           style={rowIndex === 0 ? headerStyle : cellStyle}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
           updateData={newValue => updateData(newValue, rowIndex, columnIndex)}
         >
           {gridData[rowIndex][columnIndex]}
