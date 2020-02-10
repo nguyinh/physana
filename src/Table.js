@@ -2,22 +2,43 @@ import React, { useState } from 'react';
 import { Grid, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import styles from './Table.module.css';
 
-const EditableCell = ({ children, style }) => {
+const InputCell = ({ initialValue, style, updateData }) => {
+  const [ value, setValue ] = useState(initialValue);
+
+  const onBlur = (e) => {
+    updateData(value);
+  };
+
+  const onChange = (e, f, g) => {
+    setValue(e.target.value);
+  };
+
+  return <input
+    style={{height: style.height, width: style.width, background: style.background }}
+    value={value}
+    autoFocus
+    onBlur={onBlur}
+    onChange={onChange}/>
+};
+
+const EditableCell = ({ children, style, updateData }) => {
   const [ isEditable, setIsEditable ] = useState(false);
 
-  // console.log(style);
   return <div
     style={style}
     className={styles.cell}
     onClick={() => setIsEditable(true)}>
     {isEditable
-      ? <input
+      ? <InputCell
           style={{height: style.height, width: style.width, background: style.background }}
-          // className='cell-input'
-          autoFocus
-          onBlur={() => false && setIsEditable(false)}/>
+          updateData={newValue => {
+            setIsEditable(false);
+            console.log(newValue)
+            updateData(newValue);
+          }}
+          initialValue={children}/>
       : children
-      }
+    }
   </div>
 };
 
@@ -27,8 +48,10 @@ const cache = new CellMeasurerCache({
   fixedHeight: true
 });
 
-const Table = ({ headers, data }) => {
-  const gridData = [ headers, ...data ];
+const Table = ({ headers, data, updateData }) => {
+  const gridData = data;
+  console.log(gridData);
+  // const gridData = [ headers, ...data ];
   console.log(gridData);
   
   const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
@@ -53,7 +76,11 @@ const Table = ({ headers, data }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <EditableCell key={key} style={rowIndex === 0 ? headerStyle : cellStyle}>
+        <EditableCell 
+          key={key}
+          style={rowIndex === 0 ? headerStyle : cellStyle}
+          updateData={newValue => updateData(newValue, rowIndex, columnIndex)}
+        >
           {gridData[rowIndex][columnIndex]}
         </EditableCell>
       </CellMeasurer>
@@ -62,7 +89,7 @@ const Table = ({ headers, data }) => {
 
   return <AutoSizer>
     {({height, width}) => 
-      gridData.length !== 1 && <Grid
+      gridData.length !== 0 && <Grid
         cellRenderer={cellRenderer}
         columnCount={gridData[0].length}
         columnWidth={cache.columnWidth}
