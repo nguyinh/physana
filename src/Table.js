@@ -6,6 +6,7 @@ import {
   CellMeasurerCache
 } from "react-virtualized";
 import styles from "./Table.module.css";
+import { formatAsInt } from './utils';
 
 
 const cache = new CellMeasurerCache({
@@ -19,7 +20,7 @@ const InputCell = ({ initialValue, style, updateData }) => {
   const [value, setValue] = useState(initialValue);
 
   const onBlur = () => {
-    updateData(value);
+    updateData(formatAsInt(value));
   };
 
   const onChange = e => {
