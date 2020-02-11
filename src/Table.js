@@ -3,18 +3,17 @@ import {
   Grid,
   AutoSizer,
   CellMeasurer,
-  CellMeasurerCache
+  CellMeasurerCache,
+  ScrollSync
 } from "react-virtualized";
 import styles from "./Table.module.css";
-import { formatAsInt } from './utils';
-
+import { formatAsInt } from "./utils";
 
 const cache = new CellMeasurerCache({
   defaultWidth: 150,
-  minWidth: 125,
+  minWidth: 150,
   fixedHeight: true
 });
-
 
 const InputCell = ({ initialValue, style, updateData }) => {
   const [value, setValue] = useState(initialValue);
@@ -30,14 +29,13 @@ const InputCell = ({ initialValue, style, updateData }) => {
   return (
     <input
       value={value}
-      className='cell-input'
+      className="cell-input"
       autoFocus
       onBlur={onBlur}
       onChange={onChange}
     />
   );
 };
-
 
 const EditableCell = ({
   children: value,
@@ -66,8 +64,9 @@ const EditableCell = ({
   return (
     <div
       style={style}
-      className='cell-container'
-      onClick={isHeader ? sortByColumn : handleCellClick}>
+      className="cell-container"
+      onClick={isHeader ? sortByColumn : handleCellClick}
+    >
       {!isHeader && isEditable ? (
         <InputCell
           style={style}
@@ -76,59 +75,67 @@ const EditableCell = ({
           onClick={console.log(style)}
         />
       ) : (
-        <span className='cell-value'>{value}</span>
+        <span className="cell-value">{value}</span>
       )}
     </div>
   );
 };
 
-
-const HeaderCell = ({
-  children: value,
-  style,
-  sortByColumn,
-  columnIndex
-}) => {
-  const [ sortDirection, setSortDirection ] = useState(null);
+const HeaderCell = ({ children: value, style, sortByColumn, columnIndex }) => {
+  const [sortDirection, setSortDirection] = useState(null);
 
   const handleSort = () => {
-    setSortDirection(old =>
-      old === null || old === 'DESC'
-        ? 'ASC'
-        : 'DESC'
-    );
+    setSortDirection(old => (old === null || old === "DESC" ? "ASC" : "DESC"));
     sortByColumn(columnIndex, sortDirection);
   };
 
   return (
-    <div
-      style={style}
-      className='cell-container'
-      onClick={handleSort}>
-      <span className='cell-value'>{value}</span>
+    <div style={style} className="cell-container" onClick={handleSort}>
+      <span className="cell-value">{value}</span>
     </div>
   );
 };
 
-
 const Table = ({ data, updateData, sortData }) => {
   const gridData = data;
-  console.log(gridData);
+  const [headers, ...content] = gridData;
+  // console.log(headers);
+  console.log(content);
   const [isEditing, setIsEditing] = useState(false);
 
-  const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
-
-    const cellStyle = {
-      ...style,
-      backgroundColor: rowIndex % 2 && "#fafafc",
-      textAlign: rowIndex === 0 && "center"
-    };
-
+  const renderHeaderCell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const headerStyle = {
       ...style,
-      textAlign: rowIndex === 0 && "center",
+      textAlign: "center",
       fontWeight: "bold",
-      backgroundColor: "#f3f4fb"
+      backgroundColor: "#cbd2ff",
+      // color: '#000000b5'
+    };
+
+    return (
+      <CellMeasurer
+        cache={cache}
+        columnIndex={columnIndex}
+        key={key}
+        parent={parent}
+      >
+        <HeaderCell
+          style={headerStyle}
+          sortByColumn={sortData}
+          columnIndex={columnIndex}
+        >
+          {headers[columnIndex]}
+        </HeaderCell>
+      </CellMeasurer>
+    );
+  };
+
+  const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
+    const cellStyle = {
+      ...style,
+      backgroundColor: rowIndex % 2 ? "#fafafc" : "#fff",
+      color: '#404040'
+      // textAlign: rowIndex === 0 && "center"
     };
 
     return (
@@ -139,20 +146,15 @@ const Table = ({ data, updateData, sortData }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        {rowIndex === 0
-          ? <HeaderCell style={headerStyle} sortByColumn={sortData} columnIndex={columnIndex}>
-            {gridData[rowIndex][columnIndex]}
-          </HeaderCell>
-          : <EditableCell
-            key={key}
-            style={cellStyle}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            updateData={newValue => updateData(newValue, rowIndex, columnIndex)}
-          >
-            {gridData[rowIndex][columnIndex]}
-          </EditableCell>
-        }
+        <EditableCell
+          key={key}
+          style={cellStyle}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          updateData={newValue => updateData(newValue, rowIndex + 1, columnIndex)}
+        >
+          {content[rowIndex][columnIndex]}
+        </EditableCell>
       </CellMeasurer>
     );
   };
@@ -161,16 +163,51 @@ const Table = ({ data, updateData, sortData }) => {
     <AutoSizer>
       {({ height, width }) =>
         gridData.length !== 0 && (
-          <Grid
-            cellRenderer={cellRenderer}
-            columnCount={gridData[0].length}
-            columnWidth={cache.columnWidth}
-            deferredMeasurementCache={cache}
-            height={height}
-            rowCount={gridData.length}
-            rowHeight={40}
-            width={width}
-          />
+          <ScrollSync>
+            {({
+              clientHeight,
+              clientWidth,
+              onScroll,
+              scrollHeight,
+              scrollLeft,
+              scrollTop,
+              scrollWidth
+            }) => {
+              return (
+                <div className="table">
+                  <div>
+                    <Grid
+                      className="table-header"
+                      columnWidth={cache.columnWidth}
+                      deferredMeasurementCache={cache}
+                      columnCount={headers.length}
+                      height={50}
+                      cellRenderer={renderHeaderCell}
+                      rowHeight={50}
+                      rowCount={1}
+                      scrollLeft={scrollLeft}
+                      width={width}
+                    />
+                  </div>
+
+                  <div>
+                    <Grid
+                      className="table-content"
+                      cellRenderer={cellRenderer}
+                      columnCount={content[0].length}
+                      columnWidth={cache.columnWidth}
+                      deferredMeasurementCache={cache}
+                      height={height - 50}
+                      rowCount={content.length}
+                      rowHeight={40}
+                      width={width}
+                      onScroll={onScroll}
+                    />
+                  </div>
+                </div>
+              );
+            }}
+          </ScrollSync>
         )
       }
     </AutoSizer>
@@ -178,3 +215,17 @@ const Table = ({ data, updateData, sortData }) => {
 };
 
 export default Table;
+
+/*
+Table
+  AutoSizer
+    ScrollSync
+      Grid
+        renderHeaderCell
+          CellMeasurer
+            HeaderCell
+      Grid
+        cellRenderer
+          CellMeasurer
+            EditableCell
+*/

@@ -45,13 +45,15 @@ const App = () => {
 
   return (
     <div className="App">
-      <CSVReader
-        onFileLoaded={data => formatCSVData(data)}
-        parserOptions={{skipEmptyLines: true}}/>
+      <div className='tables-header'>
+        <div className='tables-header-content'>
+          <CSVReader
+            onFileLoaded={data => formatCSVData(data)}
+            parserOptions={{skipEmptyLines: true}}/>
+        </div>
+      </div>
 
-      <button onClick={sortData}>sort</button>
-
-      <div style={{height: '1000px'}}>
+      <div className='tables-content'>
         <Table
           data={data.length ? data : mockData}
           updateData={updateData}
