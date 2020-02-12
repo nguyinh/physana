@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "./Table";
 import Filters from "./Filters";
 import "./App.css";
@@ -50,46 +50,44 @@ const App = () => {
   };
 
   const addFilter = newFilter => {
-    console.log(newFilter);
-
-    const applyFilters = filters => {
-      let [headers, ...content] = initialData;
-      console.log(filters);
-      filters.forEach(f => {
-        content = content.filter(row => {
-          const columnIndex = headers.findIndex(h => h === f.header);
-          // IF INCLUDE
-          switch (f.operator.code) {
-            case "GREATER_THAN":
-              console.log(row[columnIndex], ">", f.value);
-              return row[columnIndex] > f.value;
-            case "LOWER_THAN":
-              console.log(row[columnIndex], "<", f.value);
-              return row[columnIndex] < f.value;
-            case "EQUAL_TO":
-              console.log(row[columnIndex], "=", f.value);
-              return row[columnIndex] == f.value;
-            case "NOT_EQUAL_TO":
-              console.log(row[columnIndex], "!=", f.value);
-              return row[columnIndex] != f.value;
-            default:
-              return true;
-          }
-          // IF EXCLUDE
-        });
-
-        console.log(content);
-
-        setData([headers, ...content]);
-      });
-    };
-
-    setFilters(f => {
-      const filters = [...f, newFilter];
-      applyFilters(filters);
-      return filters;
-    });
+    setFilters(f => [...f, newFilter]);
   };
+
+  const removeFilter = filterIndex => {
+    setFilters(filters => filters.filter((_, i) => i !== filterIndex));
+  };
+
+  useEffect(() => {
+    let [headers, ...content] = initialData;
+
+    filters.forEach(f => {
+      content = content.filter(row => {
+        const columnIndex = headers.findIndex(h => h === f.header);
+        let cond = true;
+        const filterValue = formatAsInt(f.value);
+
+        switch (f.operator.code) {
+          case "GREATER_THAN":
+            cond = row[columnIndex] >= filterValue;
+            break;
+          case "LOWER_THAN":
+            cond = row[columnIndex] <= filterValue;
+            break;
+          case "EQUAL_TO":
+            cond = row[columnIndex] == filterValue;
+            break;
+          case "NOT_EQUAL_TO":
+            cond = row[columnIndex] != filterValue;
+            break;
+          default:
+            break;
+        }
+        return f.isExcluded ? !cond : cond;
+      });
+
+      setData([headers, ...content]);
+    });
+  }, [filters]);
 
   return (
     <div className="App">
@@ -105,6 +103,7 @@ const App = () => {
               headers={data[0]}
               filters={filters}
               addFilter={addFilter}
+              removeFilter={removeFilter}
             />
           )}
         </div>
