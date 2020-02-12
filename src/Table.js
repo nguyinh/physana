@@ -72,7 +72,6 @@ const EditableCell = ({
           style={style}
           updateData={handleDataUpdated}
           initialValue={value}
-          onClick={console.log(style)}
         />
       ) : (
         <span className="cell-value">{value}</span>
@@ -100,7 +99,7 @@ const Table = ({ data, updateData, sortData }) => {
   const gridData = data;
   const [headers, ...content] = gridData;
   // console.log(headers);
-  console.log(content);
+  // console.log(content);
   const [isEditing, setIsEditing] = useState(false);
 
   const renderHeaderCell = ({ columnIndex, key, parent, rowIndex, style }) => {

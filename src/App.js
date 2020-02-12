@@ -12,13 +12,13 @@ const App = () => {
     const headerLength = data[0].length;
     let formatted = data.map(row => row.splice(0, headerLength));
     formatted = formatted.map(row => row.map(cell => formatAsInt(cell)));
-    console.log(formatted);
+    // console.log(formatted);
     setData(formatted);
   };
 
   const updateData = (newValue, rowIndex, columnIndex) => {
     // console.log(newValue, rowIndex, columnIndex);
-    setData(d => 
+    setData(d =>
       d.map((row, r) => (
         r !== rowIndex
           ? row
