@@ -4,69 +4,73 @@ import Filters from "./Filters";
 import "./App.css";
 import CSVReader from "react-csv-reader";
 import { formatAsInt, mockData } from "./utils";
-import { OPERATORS } from "./constants";
+import { OPERATORS, SORT_DIRECTION } from "./constants";
 
 const App = () => {
   const [initialData, setInitialData] = useState([]);
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [filters, setFilters] = useState([]);
+  const [sortHeader, setSortHeader] = useState(null);
+  const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.none);
 
   const formatCSVData = data => {
-    data[0] = data[0].filter(header => header !== "");
-    const headerLength = data[0].length;
-    let formatted = data.map(row => row.splice(0, headerLength));
-    formatted = formatted.map(row => row.map(cell => formatAsInt(cell)));
+    let [headers, ...rest] = data;
+    headers = ['id', ...headers.filter(header => header !== "")];
+    rest = rest.map((row, index) =>
+      [index, ...row.splice(0, headers.length)].map(cell => formatAsInt(cell))
+    );
     // console.log(formatted);
-    setInitialData(formatted);
-    setData(formatted);
+    setInitialData([headers, ...rest]);
+    setData([headers, ...rest]);
+    setFilteredData([headers, ...rest]);
   };
 
-  const updateCellData = (newValue, rowIndex, columnIndex) => {
-    // console.log(newValue, rowIndex, columnIndex);
+  const updateCellData = (newValue, rowId, columnIndex) => {
+    console.log(newValue, rowId, columnIndex);
     setData(d =>
-      d.map((row, r) =>
-        r !== rowIndex
+      d.map(row =>
+        row[0] !== rowId
           ? row
           : row.map((col, c) => (c !== columnIndex ? col : newValue))
       )
     );
   };
 
-  const sortData = (i, dir) => {
-    // console.log('sort', i);
-    const sorted = [...data.splice(1)].sort((a, b) =>
-      a[i] < b[i]
-        ? dir === "ASC"
-          ? 1
-          : -1
-        : a[i] > b[i]
-        ? dir === "ASC"
-          ? -1
-          : 1
-        : 0
-    );
-    // console.log(sorted);
-    setData([data[0], ...sorted]);
+  const sortData = columnIndex => {
+    let [headers] = data;
+    const headerLabel = headers[columnIndex];
+    if (sortHeader === headerLabel) {
+      setSortDirection(
+        sortDirection === SORT_DIRECTION.asc
+          ? SORT_DIRECTION.desc
+          : SORT_DIRECTION.asc
+      );
+    } else {
+      setSortHeader(headerLabel);
+      setSortDirection(SORT_DIRECTION.asc);
+    }
   };
 
   const addFilter = newFilter => {
-    setFilters(f => [...f, newFilter]);
+    setFilters([...filters, newFilter]);
   };
 
   const removeFilter = filterIndex => {
-    setFilters(filters => filters.filter((_, i) => i !== filterIndex));
+    setFilters(filters.filter((_, i) => i !== filterIndex));
   };
 
   useEffect(() => {
-    let [headers, ...content] = initialData;
+    if (!data.length) return;
 
-    filters.forEach(f => {
-      content = content.filter(row => {
-        const columnIndex = headers.findIndex(h => h === f.header);
-        let cond = true;
-        const filterValue = formatAsInt(f.value);
+    let [headers, ...content] = data;
 
-        switch (f.operator.code) {
+    const newContent = content.filter(row => {
+      return !filters.some(({ header, operator, value, isExcluded }) => {
+        const columnIndex = headers.findIndex(h => h === header);
+        const filterValue = formatAsInt(value);
+        let cond = false;
+        switch (operator.code) {
           case "GREATER_THAN":
             cond = row[columnIndex] >= filterValue;
             break;
@@ -82,12 +86,32 @@ const App = () => {
           default:
             break;
         }
-        return f.isExcluded ? !cond : cond;
+        return isExcluded ? cond : !cond;
       });
-
-      setData([headers, ...content]);
     });
-  }, [filters]);
+
+    setFilteredData([headers, ...newContent]);
+  }, [filters, data]);
+
+  useEffect(() => {
+    if (filteredData.length <= 1) return;
+
+    const [headers, ...content] = filteredData;
+    const headerIndex = headers.findIndex(h => h === sortHeader);
+    const sortedContent = content.sort((a, b) =>
+      a[headerIndex] < b[headerIndex]
+        ? sortDirection === SORT_DIRECTION.asc
+          ? 1
+          : -1
+        : a[headerIndex] > b[headerIndex]
+        ? sortDirection === SORT_DIRECTION.asc
+          ? -1
+          : 1
+        : 0
+    );
+
+    setFilteredData([headers, ...sortedContent]);
+  }, [sortDirection, sortHeader]);
 
   return (
     <div className="App">
@@ -111,7 +135,7 @@ const App = () => {
 
       <div className="tables-content">
         <Table
-          data={data.length ? data : mockData}
+          data={filteredData.length ? filteredData : mockData}
           updateData={updateCellData}
           sortData={sortData}
         />

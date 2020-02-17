@@ -71,7 +71,7 @@ const FilterInput = ({ headers, addFilter }) => {
 };
 
 const Filters = ({ headers, filters, addFilter, removeFilter }) => {
-  const [isCreatingFilter, setIsCreatingFilter] = useState([]);
+  const [isCreatingFilter, setIsCreatingFilter] = useState(false);
 
   const createFilter = () => {
     setIsCreatingFilter(true);
@@ -81,7 +81,8 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
 
   return (
     <div>
-      {headers.length === 0 &&
+      {
+      headers.length > 0 &&
         (isCreatingFilter ? (
           <FilterInput
             headers={headers}
@@ -94,7 +95,7 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
           <button onClick={createFilter}>Create filter</button>
         ))}
       {filters.map((f, i) => (
-        <div>
+        <div key={`filter-${f.header}-${f.value}`}>
           <span key={f.value}>{f.value}</span>
           <button onClick={() => removeFilter(i)}>Remove filter</button>
         </div>

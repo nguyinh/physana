@@ -18,21 +18,13 @@ const cache = new CellMeasurerCache({
 const InputCell = ({ initialValue, style, updateData }) => {
   const [value, setValue] = useState(initialValue);
 
-  const onBlur = () => {
-    updateData(formatAsInt(value));
-  };
-
-  const onChange = e => {
-    setValue(e.target.value);
-  };
-
   return (
     <input
       value={value}
       className="cell-input"
       autoFocus
-      onBlur={onBlur}
-      onChange={onChange}
+      onBlur={() => updateData(formatAsInt(value))}
+      onChange={e => setValue(e.target.value)}
     />
   );
 };
@@ -42,9 +34,7 @@ const EditableCell = ({
   style,
   updateData,
   isEditing,
-  setIsEditing,
-  isHeader,
-  sortByColumn
+  setIsEditing
 }) => {
   const [isEditable, setIsEditable] = useState(false);
 
@@ -55,19 +45,15 @@ const EditableCell = ({
     }
   };
 
-  const handleDataUpdated = newValue => {
+  const handleDataUpdated = newCellValue => {
     setIsEditable(false);
     setTimeout(() => setIsEditing(false), 150);
-    updateData(newValue);
+    updateData(newCellValue);
   };
 
   return (
-    <div
-      style={style}
-      className="cell-container"
-      onClick={isHeader ? sortByColumn : handleCellClick}
-    >
-      {!isHeader && isEditable ? (
+    <div style={style} className="cell-container" onClick={handleCellClick}>
+      {isEditable ? (
         <InputCell
           style={style}
           updateData={handleDataUpdated}
@@ -81,15 +67,12 @@ const EditableCell = ({
 };
 
 const HeaderCell = ({ children: value, style, sortByColumn, columnIndex }) => {
-  const [sortDirection, setSortDirection] = useState(null);
-
-  const handleSort = () => {
-    setSortDirection(old => (old === null || old === "DESC" ? "ASC" : "DESC"));
-    sortByColumn(columnIndex, sortDirection);
-  };
-
   return (
-    <div style={style} className="cell-container" onClick={handleSort}>
+    <div
+      style={style}
+      className="cell-container"
+      onClick={() => sortByColumn(columnIndex)}
+    >
       <span className="cell-value">{value}</span>
     </div>
   );
@@ -98,8 +81,6 @@ const HeaderCell = ({ children: value, style, sortByColumn, columnIndex }) => {
 const Table = ({ data, updateData, sortData }) => {
   const gridData = data;
   const [headers, ...content] = gridData;
-  // console.log(headers);
-  // console.log(content);
   const [isEditing, setIsEditing] = useState(false);
 
   const renderHeaderCell = ({ columnIndex, key, parent, rowIndex, style }) => {
@@ -107,7 +88,7 @@ const Table = ({ data, updateData, sortData }) => {
       ...style,
       textAlign: "center",
       fontWeight: "bold",
-      backgroundColor: "#cbd2ff",
+      backgroundColor: "#cbd2ff"
       // color: '#000000b5'
     };
 
@@ -133,9 +114,10 @@ const Table = ({ data, updateData, sortData }) => {
     const cellStyle = {
       ...style,
       backgroundColor: rowIndex % 2 ? "#fafafc" : "#fff",
-      color: '#404040'
+      color: "#404040"
       // textAlign: rowIndex === 0 && "center"
     };
+    const rowId = content[rowIndex][0];
 
     return (
       <CellMeasurer
@@ -150,7 +132,7 @@ const Table = ({ data, updateData, sortData }) => {
           style={cellStyle}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
-          updateData={newValue => updateData(newValue, rowIndex + 1, columnIndex)}
+          updateData={newCellValue => updateData(newCellValue, rowId, columnIndex)}
         >
           {content[rowIndex][columnIndex]}
         </EditableCell>
@@ -158,10 +140,13 @@ const Table = ({ data, updateData, sortData }) => {
     );
   };
 
+  const isDataEmpty = gridData.length === 0;
+  const isContentEmpty = gridData.length === 1;
+
   return (
     <AutoSizer>
       {({ height, width }) =>
-        gridData.length !== 0 && (
+        !(isDataEmpty || isContentEmpty) && (
           <ScrollSync>
             {({
               clientHeight,

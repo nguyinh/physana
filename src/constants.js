@@ -18,6 +18,22 @@ const OPERATORS = [
   },
 ];
 
+const SORT_DIRECTION = {
+  asc: {
+    label: 'ascending',
+    code: 'ASC'
+  },
+  desc: {
+    label: 'descending',
+    code: 'DESC'
+  },
+  none: {
+    label: 'none',
+    code: 'NONE'
+  }
+}
+
 module.exports = {
-  OPERATORS
+  OPERATORS,
+  SORT_DIRECTION
 };
