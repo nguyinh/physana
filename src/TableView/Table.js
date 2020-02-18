@@ -6,8 +6,7 @@ import {
   CellMeasurerCache,
   ScrollSync
 } from "react-virtualized";
-import styles from "./Table.module.css";
-import { formatAsInt } from "./utils";
+import { formatAsInt } from "../res/utils";
 
 const cache = new CellMeasurerCache({
   defaultWidth: 150,

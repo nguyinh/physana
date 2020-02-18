@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { OPERATORS } from "./constants";
+import { OPERATORS } from "../res/constants";
 
 const FilterInput = ({ headers, addFilter }) => {
   const [header, setHeader] = useState(headers[0]);
