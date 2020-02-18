@@ -115,6 +115,7 @@ const Table = ({ data, updateData }) => {
   };
 
   const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
+
     const cellStyle = {
       ...style,
       backgroundColor: rowIndex % 2 ? "#fafafc" : "#fff",
@@ -136,7 +137,12 @@ const Table = ({ data, updateData }) => {
           style={cellStyle}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
-          updateData={newCellValue => updateData(newCellValue, rowId, columnIndex)}
+          updateData={value => 
+            dispatch({type: 'SET_DATA', payload: state.data.map(row =>
+              row[0] !== rowId
+                ? row
+                : row.map((col, c) => (c !== columnIndex ? col : value))
+            )})}
         >
           {content[rowIndex][columnIndex]}
         </EditableCell>

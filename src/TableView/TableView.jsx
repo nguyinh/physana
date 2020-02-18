@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import Table from "./Table";
 import Filters from "./Filters";
 import CSVReader from "react-csv-reader";
@@ -8,9 +8,10 @@ import { SORT_DIRECTION } from "../res/constants";
 import { TableContext } from "./TableContext";
 
 const TableView = () => {
-  const { state, dispatch } = useContext(TableContext);
-
-  const [data, setData] = useState([]);
+  const {
+    state: { data, filteredData, sortHeader, sortDirection, filters },
+    dispatch
+  } = useContext(TableContext);
 
   const formatCSVData = data => {
     let [headers, ...rest] = data;
@@ -21,24 +22,13 @@ const TableView = () => {
     dispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
   };
 
-  const updateCellData = (newValue, rowId, columnIndex) => {
-    // console.log(newValue, rowId, columnIndex);
-    setData(d =>
-      d.map(row =>
-        row[0] !== rowId
-          ? row
-          : row.map((col, c) => (c !== columnIndex ? col : newValue))
-      )
-    );
-  };
-
   useEffect(() => {
-    if (!state.data.length) return;
+    if (!data.length) return;
 
-    let [headers, ...content] = state.data;
+    let [headers, ...content] = data;
 
     const newContent = content.filter(row => {
-      return !state.filters.some(({ header, operator, value, isExcluded }) => {
+      return !filters.some(({ header, operator, value, isExcluded }) => {
         const columnIndex = headers.findIndex(h => h === header);
         const filterValue = formatAsInt(value);
         let cond = false;
@@ -63,27 +53,30 @@ const TableView = () => {
     });
 
     dispatch({ type: "SET_FILTERED_DATA", payload: [headers, ...newContent] });
-  }, [state.filters]);
+  }, [filters, data]);
 
   useEffect(() => {
-    if (state.filteredData.length <= 1) return;
+    if (filteredData.length <= 1) return;
 
-    const [headers, ...content] = state.filteredData;
-    const headerIndex = headers.findIndex(h => h === state.sortHeader);
+    const [headers, ...content] = filteredData;
+    const headerIndex = headers.findIndex(h => h === sortHeader);
     const sortedContent = content.sort((a, b) =>
       a[headerIndex] < b[headerIndex]
-        ? state.sortDirection === SORT_DIRECTION.asc
+        ? sortDirection === SORT_DIRECTION.asc
           ? 1
           : -1
         : a[headerIndex] > b[headerIndex]
-        ? state.sortDirection === SORT_DIRECTION.asc
+        ? sortDirection === SORT_DIRECTION.asc
           ? -1
           : 1
         : 0
     );
 
-    dispatch({type: 'SET_FILTERED_DATA', payload: [headers, ...sortedContent]})
-  }, [state.sortDirection, state.sortHeader]);
+    dispatch({
+      type: "SET_FILTERED_DATA",
+      payload: [headers, ...sortedContent]
+    });
+  }, [sortDirection, sortHeader]);
 
   return (
     <div className="App">
@@ -94,10 +87,10 @@ const TableView = () => {
             parserOptions={{ skipEmptyLines: true }}
           />
 
-          {state.data.length > 0 && (
+          {data.length > 0 && (
             <Filters
-              headers={state.data[0]}
-              filters={state.filters}
+              headers={data[0]}
+              filters={filters}
               addFilter={newFilter =>
                 dispatch({ type: "ADD_FILTER", payload: newFilter })
               }
@@ -110,10 +103,7 @@ const TableView = () => {
       </div>
 
       <div className="tables-content">
-        <Table
-          data={state.filteredData.length ? state.filteredData : mockData}
-          updateData={updateCellData}
-        />
+        <Table data={filteredData.length ? filteredData : mockData} />
       </div>
     </div>
   );

@@ -20,6 +20,8 @@ let reducer = (state, action) => {
       return sortData(state, action.payload);
     case "FORMAT_CSV":
       return setInitialData(state, action.payload);
+    case 'SET_DATA':
+      return { ...state, data: action.payload };
     case "SET_FILTERED_DATA":
       return { ...state, filteredData: action.payload };
     default:
