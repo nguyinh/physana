@@ -97,9 +97,9 @@ const TableView = () => {
   }, [state.filters]);
 
   useEffect(() => {
-    if (filteredData.length <= 1) return;
+    if (state.filteredData.length <= 1) return;
 
-    const [headers, ...content] = filteredData;
+    const [headers, ...content] = state.filteredData;
     const headerIndex = headers.findIndex(h => h === sortHeader);
     const sortedContent = content.sort((a, b) =>
       a[headerIndex] < b[headerIndex]
@@ -118,41 +118,37 @@ const TableView = () => {
 
   console.log(state);
   return (
-    <TableContext.Consumer>
-      {({ state, dispatch }) => (
-        <div className="App">
-          <div className="tables-header">
-            <div className="tables-header-content">
-              <CSVReader
-                onFileLoaded={data => formatCSVData(data)}
-                parserOptions={{ skipEmptyLines: true }}
-              />
+    <div className="App">
+      <div className="tables-header">
+        <div className="tables-header-content">
+          <CSVReader
+            onFileLoaded={data => formatCSVData(data)}
+            parserOptions={{ skipEmptyLines: true }}
+          />
 
-              {state.data.length > 0 && (
-                <Filters
-                  headers={state.data[0]}
-                  filters={state.filters}
-                  addFilter={newFilter =>
-                    dispatch({ type: "ADD_FILTER", payload: newFilter })
-                  }
-                  removeFilter={filterIndex =>
-                    dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
-                  }
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="tables-content">
-            <Table
-              data={state.filteredData.length ? state.filteredData : mockData}
-              updateData={updateCellData}
-              sortData={sortData}
+          {state.data.length > 0 && (
+            <Filters
+              headers={state.data[0]}
+              filters={state.filters}
+              addFilter={newFilter =>
+                dispatch({ type: "ADD_FILTER", payload: newFilter })
+              }
+              removeFilter={filterIndex =>
+                dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
+              }
             />
-          </div>
+          )}
         </div>
-      )}
-    </TableContext.Consumer>
+      </div>
+
+      <div className="tables-content">
+        <Table
+          data={state.filteredData.length ? state.filteredData : mockData}
+          updateData={updateCellData}
+          sortData={sortData}
+        />
+      </div>
+    </div>
   );
 };
 
