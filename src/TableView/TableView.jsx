@@ -112,6 +112,7 @@ const TableView = () => {
     setFilteredData([headers, ...sortedContent]);
   }, [sortDirection, sortHeader]);
 
+  console.log(data);
   return (
     <div className="App">
       <div className="tables-header">
@@ -121,7 +122,7 @@ const TableView = () => {
             parserOptions={{ skipEmptyLines: true }}
           />
 
-          {data.length && (
+          {data.length > 0 && (
             <Filters
               headers={data[0]}
               filters={filters}

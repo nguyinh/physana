@@ -18,5 +18,5 @@ const mockData = uglyString.split(';').map(row => row.split(':'));
 
 module.exports = {
   formatAsInt,
-  mockData
+  mockData: ''
 }
