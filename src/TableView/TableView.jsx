@@ -15,10 +15,11 @@ const TableView = () => {
 
   const formatCSVData = data => {
     let [headers, ...rest] = data;
-    headers = ["id", ...headers.filter(header => header !== "")];
+    headers = ['id', ...headers.filter(header => header !== "")];
     rest = rest.map((row, index) =>
-      [index, ...row.splice(0, headers.length)].map(cell => formatAsInt(cell))
+      [index, ...row.splice(0, headers.length - 1)].map(cell => formatAsInt(cell))
     );
+
     dispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
   };
 

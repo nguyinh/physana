@@ -68,7 +68,7 @@ const EditableCell = ({
 };
 
 const HeaderCell = ({ children: value, style, columnIndex }) => {
-  const { state, dispatch } = useContext(TableContext);
+  const { dispatch } = useContext(TableContext);
 
   return (
     <div
@@ -81,11 +81,10 @@ const HeaderCell = ({ children: value, style, columnIndex }) => {
   );
 };
 
-const Table = ({ data, updateData }) => {
+const Table = ({ data }) => {
   const { state, dispatch } = useContext(TableContext);
 
-  const gridData = data;
-  const [headers, ...content] = gridData;
+  const [headers, ...content] = data; // Replace by filteredData ?
   const [isEditing, setIsEditing] = useState(false);
 
   const renderHeaderCell = ({ columnIndex, key, parent, rowIndex, style }) => {
@@ -115,7 +114,6 @@ const Table = ({ data, updateData }) => {
   };
 
   const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
-
     const cellStyle = {
       ...style,
       backgroundColor: rowIndex % 2 ? "#fafafc" : "#fff",
@@ -150,8 +148,8 @@ const Table = ({ data, updateData }) => {
     );
   };
 
-  const isDataEmpty = gridData.length === 0;
-  const isContentEmpty = gridData.length === 1;
+  const isDataEmpty = data.length === 0;
+  const isContentEmpty = data.length === 1;
 
   return (
     <AutoSizer>
