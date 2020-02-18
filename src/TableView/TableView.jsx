@@ -10,12 +10,7 @@ import { TableContext } from "./TableContext";
 const TableView = () => {
   const { state, dispatch } = useContext(TableContext);
 
-  // const [initialData, setInitialData] = useState([]);
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  // const [filters, setFilters] = useState([]);
-  const [sortHeader, setSortHeader] = useState(null);
-  const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.none);
 
   const formatCSVData = data => {
     let [headers, ...rest] = data;
@@ -24,13 +19,10 @@ const TableView = () => {
       [index, ...row.splice(0, headers.length)].map(cell => formatAsInt(cell))
     );
     dispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
-    // setInitialData([headers, ...rest]);
-    // setData([headers, ...rest]);
-    // setFilteredData([headers, ...rest]);
   };
 
   const updateCellData = (newValue, rowId, columnIndex) => {
-    console.log(newValue, rowId, columnIndex);
+    // console.log(newValue, rowId, columnIndex);
     setData(d =>
       d.map(row =>
         row[0] !== rowId
@@ -39,29 +31,6 @@ const TableView = () => {
       )
     );
   };
-
-  const sortData = columnIndex => {
-    let [headers] = data;
-    const headerLabel = headers[columnIndex];
-    if (sortHeader === headerLabel) {
-      setSortDirection(
-        sortDirection === SORT_DIRECTION.asc
-          ? SORT_DIRECTION.desc
-          : SORT_DIRECTION.asc
-      );
-    } else {
-      setSortHeader(headerLabel);
-      setSortDirection(SORT_DIRECTION.asc);
-    }
-  };
-
-  // const addFilter = newFilter => {
-  //   setFilters([...filters, newFilter]);
-  // };
-
-  // const removeFilter = filterIndex => {
-  //   setFilters(filters.filter((_, i) => i !== filterIndex));
-  // };
 
   useEffect(() => {
     if (!state.data.length) return;
@@ -100,23 +69,22 @@ const TableView = () => {
     if (state.filteredData.length <= 1) return;
 
     const [headers, ...content] = state.filteredData;
-    const headerIndex = headers.findIndex(h => h === sortHeader);
+    const headerIndex = headers.findIndex(h => h === state.sortHeader);
     const sortedContent = content.sort((a, b) =>
       a[headerIndex] < b[headerIndex]
-        ? sortDirection === SORT_DIRECTION.asc
+        ? state.sortDirection === SORT_DIRECTION.asc
           ? 1
           : -1
         : a[headerIndex] > b[headerIndex]
-        ? sortDirection === SORT_DIRECTION.asc
+        ? state.sortDirection === SORT_DIRECTION.asc
           ? -1
           : 1
         : 0
     );
 
-    setFilteredData([headers, ...sortedContent]);
-  }, [sortDirection, sortHeader]);
+    dispatch({type: 'SET_FILTERED_DATA', payload: [headers, ...sortedContent]})
+  }, [state.sortDirection, state.sortHeader]);
 
-  console.log(state);
   return (
     <div className="App">
       <div className="tables-header">
@@ -145,7 +113,6 @@ const TableView = () => {
         <Table
           data={state.filteredData.length ? state.filteredData : mockData}
           updateData={updateCellData}
-          sortData={sortData}
         />
       </div>
     </div>

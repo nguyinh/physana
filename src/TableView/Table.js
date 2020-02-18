@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Grid,
   AutoSizer,
@@ -7,6 +7,8 @@ import {
   ScrollSync
 } from "react-virtualized";
 import { formatAsInt } from "../res/utils";
+
+import { TableContext } from "./TableContext";
 
 const cache = new CellMeasurerCache({
   defaultWidth: 150,
@@ -65,19 +67,23 @@ const EditableCell = ({
   );
 };
 
-const HeaderCell = ({ children: value, style, sortByColumn, columnIndex }) => {
+const HeaderCell = ({ children: value, style, columnIndex }) => {
+  const { state, dispatch } = useContext(TableContext);
+
   return (
     <div
       style={style}
       className="cell-container"
-      onClick={() => sortByColumn(columnIndex)}
+      onClick={() => dispatch({type: 'SORT_BY_COLUMN', payload: columnIndex})}
     >
       <span className="cell-value">{value}</span>
     </div>
   );
 };
 
-const Table = ({ data, updateData, sortData }) => {
+const Table = ({ data, updateData }) => {
+  const { state, dispatch } = useContext(TableContext);
+
   const gridData = data;
   const [headers, ...content] = gridData;
   const [isEditing, setIsEditing] = useState(false);
@@ -100,7 +106,6 @@ const Table = ({ data, updateData, sortData }) => {
       >
         <HeaderCell
           style={headerStyle}
-          sortByColumn={sortData}
           columnIndex={columnIndex}
         >
           {headers[columnIndex]}

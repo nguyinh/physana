@@ -78,7 +78,7 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
 
     // TODO
   };
-  console.log(headers)
+
   return (
     <div>
       {headers.length > 0 &&

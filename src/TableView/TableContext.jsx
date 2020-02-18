@@ -4,8 +4,6 @@ import { formatAsInt } from "../res/utils";
 
 let reducer = (state, action) => {
   const { filters, data, filteredData } = state;
-  console.log(filters);
-  console.log(state);
 
   switch (action.type) {
     case "ADD_FILTER":
@@ -18,6 +16,8 @@ let reducer = (state, action) => {
         ...state,
         filters: filters.filter((_, i) => i !== action.payload)
       };
+    case "SORT_BY_COLUMN":
+      return sortData(state, action.payload);
     case "FORMAT_CSV":
       return setInitialData(state, action.payload);
     case "SET_FILTERED_DATA":
@@ -34,6 +34,27 @@ const setInitialData = (state, formattedData) => {
     data: formattedData,
     filteredData: formattedData
   };
+};
+
+const sortData = (state, columnIndex) => {
+  const { data, sortHeader, sortDirection } = state;
+  let [headers] = data;
+  const headerLabel = headers[columnIndex];
+  if (sortHeader === headerLabel) {
+    return {
+      ...state,
+      sortDirection:
+        sortDirection === SORT_DIRECTION.asc
+          ? SORT_DIRECTION.desc
+          : SORT_DIRECTION.asc
+    };
+  } else {
+    return {
+      ...state,
+      sortHeader: headerLabel,
+      sortDirection: SORT_DIRECTION.asc
+    };
+  }
 };
 
 const initialState = {
