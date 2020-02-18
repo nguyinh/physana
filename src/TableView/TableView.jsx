@@ -1,28 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Table from "./Table";
 import Filters from "./Filters";
 import CSVReader from "react-csv-reader";
 import { formatAsInt, mockData } from "../res/utils";
 import { SORT_DIRECTION } from "../res/constants";
 
+import { TableContext } from "./TableContext";
+
 const TableView = () => {
-  const [initialData, setInitialData] = useState([]);
+  const { state, dispatch } = useContext(TableContext);
+
+  // const [initialData, setInitialData] = useState([]);
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [filters, setFilters] = useState([]);
+  // const [filters, setFilters] = useState([]);
   const [sortHeader, setSortHeader] = useState(null);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.none);
 
   const formatCSVData = data => {
     let [headers, ...rest] = data;
-    headers = ['id', ...headers.filter(header => header !== "")];
+    headers = ["id", ...headers.filter(header => header !== "")];
     rest = rest.map((row, index) =>
       [index, ...row.splice(0, headers.length)].map(cell => formatAsInt(cell))
     );
-    // console.log(formatted);
-    setInitialData([headers, ...rest]);
-    setData([headers, ...rest]);
-    setFilteredData([headers, ...rest]);
+    dispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
+    // setInitialData([headers, ...rest]);
+    // setData([headers, ...rest]);
+    // setFilteredData([headers, ...rest]);
   };
 
   const updateCellData = (newValue, rowId, columnIndex) => {
@@ -51,21 +55,21 @@ const TableView = () => {
     }
   };
 
-  const addFilter = newFilter => {
-    setFilters([...filters, newFilter]);
-  };
+  // const addFilter = newFilter => {
+  //   setFilters([...filters, newFilter]);
+  // };
 
-  const removeFilter = filterIndex => {
-    setFilters(filters.filter((_, i) => i !== filterIndex));
-  };
+  // const removeFilter = filterIndex => {
+  //   setFilters(filters.filter((_, i) => i !== filterIndex));
+  // };
 
   useEffect(() => {
-    if (!data.length) return;
+    if (!state.data.length) return;
 
-    let [headers, ...content] = data;
+    let [headers, ...content] = state.data;
 
     const newContent = content.filter(row => {
-      return !filters.some(({ header, operator, value, isExcluded }) => {
+      return !state.filters.some(({ header, operator, value, isExcluded }) => {
         const columnIndex = headers.findIndex(h => h === header);
         const filterValue = formatAsInt(value);
         let cond = false;
@@ -89,8 +93,8 @@ const TableView = () => {
       });
     });
 
-    setFilteredData([headers, ...newContent]);
-  }, [filters, data]);
+    dispatch({ type: "SET_FILTERED_DATA", payload: [headers, ...newContent] });
+  }, [state.filters]);
 
   useEffect(() => {
     if (filteredData.length <= 1) return;
@@ -112,35 +116,43 @@ const TableView = () => {
     setFilteredData([headers, ...sortedContent]);
   }, [sortDirection, sortHeader]);
 
-  console.log(data);
+  console.log(state);
   return (
-    <div className="App">
-      <div className="tables-header">
-        <div className="tables-header-content">
-          <CSVReader
-            onFileLoaded={data => formatCSVData(data)}
-            parserOptions={{ skipEmptyLines: true }}
-          />
+    <TableContext.Consumer>
+      {({ state, dispatch }) => (
+        <div className="App">
+          <div className="tables-header">
+            <div className="tables-header-content">
+              <CSVReader
+                onFileLoaded={data => formatCSVData(data)}
+                parserOptions={{ skipEmptyLines: true }}
+              />
 
-          {data.length > 0 && (
-            <Filters
-              headers={data[0]}
-              filters={filters}
-              addFilter={addFilter}
-              removeFilter={removeFilter}
+              {state.data.length > 0 && (
+                <Filters
+                  headers={state.data[0]}
+                  filters={state.filters}
+                  addFilter={newFilter =>
+                    dispatch({ type: "ADD_FILTER", payload: newFilter })
+                  }
+                  removeFilter={filterIndex =>
+                    dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
+                  }
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="tables-content">
+            <Table
+              data={state.filteredData.length ? state.filteredData : mockData}
+              updateData={updateCellData}
+              sortData={sortData}
             />
-          )}
+          </div>
         </div>
-      </div>
-
-      <div className="tables-content">
-        <Table
-          data={filteredData.length ? filteredData : mockData}
-          updateData={updateCellData}
-          sortData={sortData}
-        />
-      </div>
-    </div>
+      )}
+    </TableContext.Consumer>
   );
 };
 

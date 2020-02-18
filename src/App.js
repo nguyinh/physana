@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import TableView from './TableView/TableView.jsx';
+import { TableProvider } from './TableView/TableContext';
 
 const App = () => {
 
   return (
     <div className="App">
-      <TableView/>
+      <TableProvider>
+        <TableView/>
+      </TableProvider>
     </div>
   );
 };

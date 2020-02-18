@@ -78,10 +78,10 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
 
     // TODO
   };
-
+  console.log(headers)
   return (
     <div>
-      {/* {headers.length > 0 &&
+      {headers.length > 0 &&
         (isCreatingFilter ? (
           <FilterInput
             headers={headers}
@@ -92,7 +92,7 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
           />
         ) : (
           <button onClick={createFilter}>Create filter</button>
-        ))} */}
+        ))}
       {filters.map((f, i) => (
         <div key={`filter-${f.header}-${f.value}`}>
           <span key={f.value}>{f.value}</span>
