@@ -67,6 +67,18 @@ const EditableCell = ({
   );
 };
 
+const ConstantCell = ({ children: value, style }) => {
+  const handleCellClick = () => {
+    console.log("Constant cell clicked");
+  };
+
+  return (
+    <div style={style} className="cell-container" onClick={handleCellClick}>
+      <span className="cell-value">{value}</span>
+    </div>
+  );
+};
+
 const HeaderCell = ({ children: value, style, columnIndex }) => {
   const { dispatch } = useContext(TableContext);
 
@@ -74,7 +86,7 @@ const HeaderCell = ({ children: value, style, columnIndex }) => {
     <div
       style={style}
       className="cell-container"
-      onClick={() => dispatch({type: 'SORT_BY_COLUMN', payload: columnIndex})}
+      onClick={() => dispatch({ type: "SORT_BY_COLUMN", payload: columnIndex })}
     >
       <span className="cell-value">{value}</span>
     </div>
@@ -103,21 +115,21 @@ const Table = ({ data }) => {
         key={key}
         parent={parent}
       >
-        <HeaderCell
-          style={headerStyle}
-          columnIndex={columnIndex}
-        >
+        <HeaderCell style={headerStyle} columnIndex={columnIndex}>
           {headers[columnIndex]}
         </HeaderCell>
       </CellMeasurer>
     );
   };
 
-  const cellRenderer = ({ columnIndex, key, parent, rowIndex, style }) => {
+  const renderContentCell = ({ columnIndex, key, parent, rowIndex, style }) => {
     const cellStyle = {
       ...style,
-      backgroundColor: rowIndex % 2 ? "#fafafc" : "#fff",
-      color: "#404040"
+      backgroundColor: columnIndex === 0
+        ? rowIndex % 2 ? "#eae8e8" : "#f2f2f2"
+        : rowIndex % 2 ? "#fafafc" : "#fff",
+      color: "#404040",
+      fontWeight: columnIndex === 0 && '600'
       // textAlign: rowIndex === 0 && "center"
     };
     const rowId = content[rowIndex][0];
@@ -130,20 +142,30 @@ const Table = ({ data }) => {
         parent={parent}
         rowIndex={rowIndex}
       >
-        <EditableCell
-          key={key}
-          style={cellStyle}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-          updateData={value => 
-            dispatch({type: 'SET_DATA', payload: state.data.map(row =>
-              row[0] !== rowId
-                ? row
-                : row.map((col, c) => (c !== columnIndex ? col : value))
-            )})}
-        >
-          {content[rowIndex][columnIndex]}
-        </EditableCell>
+        {columnIndex === 0 ? (
+          <ConstantCell key={key} style={cellStyle}>
+            {content[rowIndex][columnIndex]}
+          </ConstantCell>
+        ) : (
+          <EditableCell
+            key={key}
+            style={cellStyle}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            updateData={value =>
+              dispatch({
+                type: "SET_DATA",
+                payload: state.data.map(row =>
+                  row[0] !== rowId
+                    ? row
+                    : row.map((col, c) => (c !== columnIndex ? col : value))
+                )
+              })
+            }
+          >
+            {content[rowIndex][columnIndex]}
+          </EditableCell>
+        )}
       </CellMeasurer>
     );
   };
@@ -185,7 +207,7 @@ const Table = ({ data }) => {
                   <div>
                     <Grid
                       className="table-content"
-                      cellRenderer={cellRenderer}
+                      cellRenderer={renderContentCell}
                       columnCount={content[0].length}
                       columnWidth={cache.columnWidth}
                       deferredMeasurementCache={cache}
