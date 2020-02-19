@@ -53,6 +53,15 @@
   text-align: center;
 }
 
+.editable-cell {
+  transition: 0.2s;
+
+}
+.editable-cell:hover {
+  background-color: #0000ff33 !important;
+  /* border: 1px solid #221fcf1d; */
+}
+
 .cell-input {
   border: none;
   padding: 0;
@@ -62,8 +71,9 @@
   background: #211fcf5e;
   color: white;
   text-align: center;
-  font-size: initial;
+  font-size: 17px;
   outline-width: 0;
+  font-weight: 700;
 }
 
 .cell-container {

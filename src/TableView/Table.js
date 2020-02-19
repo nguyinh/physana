@@ -52,8 +52,10 @@ const EditableCell = ({
     updateData(newCellValue);
   };
 
+  const animateBackground = !isEditing ? 'editable-cell' : '';
+
   return (
-    <div style={style} className="cell-container" onClick={handleCellClick}>
+    <div style={style} className={`cell-container ${animateBackground}`} onClick={handleCellClick}>
       {isEditable ? (
         <InputCell
           style={style}

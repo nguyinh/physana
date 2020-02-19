@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./App.css";
 import TableView from './TableView/TableView.jsx';
 import { TableProvider } from './TableView/TableContext';
