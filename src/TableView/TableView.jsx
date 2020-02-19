@@ -15,9 +15,11 @@ const TableView = () => {
 
   const formatCSVData = data => {
     let [headers, ...rest] = data;
-    headers = ['id', ...headers.filter(header => header !== "")];
+    headers = ["id", ...headers.filter(header => header !== "")];
     rest = rest.map((row, index) =>
-      [index, ...row.splice(0, headers.length - 1)].map(cell => formatAsInt(cell))
+      [index, ...row.splice(0, headers.length - 1)].map(cell =>
+        formatAsInt(cell)
+      )
     );
 
     dispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
@@ -83,10 +85,20 @@ const TableView = () => {
     <div className="App">
       <div className="tables-header">
         <div className="tables-header-content">
-          <CSVReader
-            onFileLoaded={data => formatCSVData(data)}
-            parserOptions={{ skipEmptyLines: true }}
-          />
+          {!data.length && (
+            <CSVReader
+              onFileLoaded={data => formatCSVData(data)}
+              parserOptions={{ skipEmptyLines: true }}
+              label={
+                <>
+                  <span className="plus-prefix">+</span>{" "}
+                  <span className="label-suffix">Insert your CSV file</span>
+                </>
+              }
+              cssClass="csv-reader-input"
+              inputId="csv-input"
+            />
+          )}
 
           {data.length > 0 && (
             <Filters
