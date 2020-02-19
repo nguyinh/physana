@@ -91,7 +91,7 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
             }}
           />
         ) : (
-          <button onClick={createFilter}>Create filter</button>
+          <button className='create-filter-button' onClick={createFilter}>+ Create filter</button>
         ))}
       {filters.map((f, i) => (
         <div key={`filter-${f.header}-${f.value}`}>

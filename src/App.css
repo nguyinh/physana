@@ -33,7 +33,9 @@
     transform: rotate(360deg);
   }
 } */
-
+button {
+  outline: none;
+}
 
 .App {
   height: 96vh;
@@ -166,4 +168,25 @@
 .table-content {
   border-radius: 0px 0px 10px 10px;
   outline: none;
+}
+
+
+
+.create-filter-button {
+  user-select: none;
+  cursor: pointer;
+  border: 2px solid #fff0;
+  border-radius: 30px;
+  color: white;
+  padding: 0.3em 0.8em;
+  background: #02e802;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.create-filter-button:hover {
+  border: 2px solid #02e802;
+  background: #56f15600;
+  color: #02e802;
 }
