@@ -14,7 +14,8 @@
     "react-csv-reader": "^2.0.2",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.1",
-    "react-virtualized": "^9.21.2"
+    "react-virtualized": "^9.21.2",
+    "semantic-ui-react": "^0.88.2"
   },
   "scripts": {
     "start": "react-scripts start",
