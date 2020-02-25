@@ -25,7 +25,7 @@ let reducer = (state, action) => {
     case "SET_FILTERED_DATA":
       return { ...state, filteredData: action.payload };
     default:
-      return;
+      return state;
   }
 };
 

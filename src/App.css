@@ -182,6 +182,7 @@ button {
   background: #02e802;
   font-size: 1.1em;
   font-weight: 600;
+  box-shadow: 0px 0px 11px 4px #8282823d;
   transition: 0.3s;
 }
 
@@ -189,4 +190,46 @@ button {
   border: 2px solid #02e802;
   background: #56f15600;
   color: #02e802;
+}
+
+.filter-tag-container {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0px;
+}
+
+.filter-tag {
+  display: inline-block;
+  padding: 4px 15px;
+  border-radius: 15px;
+  width: fit-content;
+  margin-bottom: 4px;
+}
+
+.filter-tag.exclude {
+  background: #ffbcbc;
+}
+.filter-tag.include {
+  background: #97cff9;
+}
+
+.filter-tag__excluding-condition {
+  font-weight: 700;
+}
+
+.filter-tag__header {
+  font-weight: 700;
+}
+
+.filter-tag__operator {
+  font-weight: 700;
+}
+
+.filter-tag__value {
+  font-weight: 700;
+}
+
+.filter-tag__close-icon {
+  margin-left: 4px;
+  color: #ff000091;
 }

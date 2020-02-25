@@ -1,19 +1,23 @@
 
 const OPERATORS = [
   {
-    label: '>',
+    sign: '>',
+    label: 'greater than',
     code: 'GREATER_THAN'
   },
   {
-    label: '<',
+    sign: '<',
+    label: 'lower than',
     code: 'LOWER_THAN'
   },
   {
-    label: '=',
+    sign: '=',
+    label: 'equal to',
     code: 'EQUAL_TO'
   },
   {
-    label: '!=',
+    sign: '!=',
+    label: 'different from',
     code: 'NOT_EQUAL_TO'
   },
 ];

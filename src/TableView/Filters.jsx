@@ -1,5 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { OPERATORS } from "../res/constants";
+import { TableContext } from "./TableContext";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
+const FilterTag = ({filter: {header, isExcluded, operator, value}, filterIndex}) => {
+  const { dispatch } = useContext(TableContext);
+
+  return (
+    <span className={`filter-tag ${isExcluded ? "exclude" : "include"}`}>
+      <span className='filter-tag__excluding-condition'>{`${isExcluded ? "Exclude" : "Include"} `}</span>
+      <span>all </span>
+      <span className='filter-tag__header'>{`${header} `}</span>
+      <span>which are </span>
+      <span className='filter-tag__operator'>{`${operator.label} `}</span>
+      <span className='filter-tag__value'>{`${value} `}</span>
+      <FontAwesomeIcon
+        className='filter-tag__close-icon'
+        icon={faTimes}
+        onClick={() => dispatch({ type: "REMOVE_FILTER", payload: filterIndex })}
+      />
+    </span>
+  );
+};
 
 const FilterInput = ({ headers, addFilter }) => {
   const [header, setHeader] = useState(headers[0]);
@@ -53,7 +76,7 @@ const FilterInput = ({ headers, addFilter }) => {
       >
         {OPERATORS.map((o, i) => (
           <option value={i} key={o.code}>
-            {o.label}
+            {o.sign}
           </option>
         ))}
       </select>
@@ -70,13 +93,18 @@ const FilterInput = ({ headers, addFilter }) => {
   );
 };
 
-const Filters = ({ headers, filters, addFilter, removeFilter }) => {
+const Filters = ({ headers }) => {
   const [isCreatingFilter, setIsCreatingFilter] = useState(false);
 
+  const {
+    state: { filters },
+    dispatch
+  } = useContext(TableContext);
+  console.log(filters);
   const createFilter = () => {
     setIsCreatingFilter(true);
 
-    // TODO
+    // TODO: check for inputs
   };
 
   return (
@@ -87,18 +115,20 @@ const Filters = ({ headers, filters, addFilter, removeFilter }) => {
             headers={headers}
             addFilter={f => {
               setIsCreatingFilter(false);
-              addFilter(f);
+              dispatch({ type: "ADD_FILTER", payload: f })
             }}
           />
         ) : (
           <button className='create-filter-button' onClick={createFilter}>+ Create filter</button>
         ))}
-      {filters.map((f, i) => (
-        <div key={`filter-${f.header}-${f.value}`}>
-          <span key={f.value}>{f.value}</span>
-          <button onClick={() => removeFilter(i)}>Remove filter</button>
+        <div className='filter-tag-container'>
+          {filters.map((f, i) => (
+            <FilterTag
+              key={`filter-${f.header}-${f.value}`}
+              filter={f}
+              filterIndex={i}/>
+          ))}
         </div>
-      ))}
     </div>
   );
 };
