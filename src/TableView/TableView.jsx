@@ -82,7 +82,7 @@ const TableView = () => {
   }, [sortDirection, sortHeader]);
 
   return (
-    <div className="App">
+    <>
       <div className="tables-header">
         <div className="tables-header-content">
           {!data.length && (
@@ -118,7 +118,7 @@ const TableView = () => {
       <div className="tables-content">
         <Table data={filteredData.length ? filteredData : mockData} />
       </div>
-    </div>
+    </>
   );
 };
 
