@@ -192,6 +192,12 @@ button {
   color: #02e802;
 }
 
+.filter-tag-creation {
+  display: flex;
+  justify-content: space-around;
+  width: 80%;
+}
+
 .filter-tag-container {
   display: flex;
   flex-direction: column;
@@ -230,6 +236,6 @@ button {
 }
 
 .filter-tag__close-icon {
-  margin-left: 4px;
-  color: #ff000091;
+  margin-left: 6px !important;
+  margin-right: -3px !important;
 }
