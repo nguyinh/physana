@@ -13,7 +13,7 @@ const FilterTag = ({filter: {header, isExcluded, operator, value}, filterIndex})
       <span className='filter-tag__header'>{`${header} `}</span>
       <span>which are </span>
       <span className='filter-tag__operator'>{`${operator.label} `}</span>
-      <span className='filter-tag__value'>{`${value} `}</span>
+      <span className='filter-tag__value'>{`${value === '' && '\'\''} `}</span>
       <Icon className='filter-tag__close-icon' name='trash alternate outline' onClick={() => dispatch({ type: "REMOVE_FILTER", payload: filterIndex })}/>
     </span>
   );
@@ -24,7 +24,7 @@ const FilterInput = ({ headers, addFilter }) => {
   const [isExcluded, setIsExcluded] = useState(false);
   const [operator, setOperator] = useState(OPERATORS[0]);
   const [value, setValue] = useState("");
-  console.log(header);
+
   const handleAddFilter = () => {
     // TODO: Check for missing fields
 
@@ -42,6 +42,7 @@ const FilterInput = ({ headers, addFilter }) => {
         placeholder="Category"
         search
         selection
+        defaultValue={headers[1]}
         onChange={(e, d) => setHeader(d.value)}
         options={headers.map(h => ({ text: h, value: h }))}
       />
@@ -112,9 +113,10 @@ const Filters = ({ headers }) => {
             }}
           />
         ) : (
-          <button className="create-filter-button" onClick={createFilter}>
-            + Create filter
-          </button>
+          <Button icon color='green' labelPosition='right' onClick={createFilter}>
+            Create filter
+            <Icon name='plus' />
+          </Button>
         ))}
       <div className="filter-tag-container">
         {filters.map((f, i) => (
