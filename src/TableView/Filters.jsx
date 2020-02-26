@@ -3,7 +3,7 @@ import { OPERATORS } from "../res/constants";
 import { TableContext } from "./TableContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { Dropdown, Button } from 'semantic-ui-react'
+import { Dropdown, Button, Input } from 'semantic-ui-react'
 
 const FilterTag = ({filter: {header, isExcluded, operator, value}, filterIndex}) => {
   const { dispatch } = useContext(TableContext);
@@ -45,19 +45,13 @@ const FilterInput = ({ headers, addFilter }) => {
   return (
     <div>
       <Dropdown
-        placeholder='Category'
-        fluid
+        placeholder="Category"
         search
         selection
         id="headers"
         onChange={(e, d) => setHeader(d.value)}
-        options={headers.map(h => ({ ...h, key: h, text: h, value: h}))}>
-        {/* {headers.map((h, i) => (
-          <option value={h} key={i}>
-            {h}
-          </option>
-        ))} */}
-      </Dropdown>
+        options={headers.map(h => ({ text: h, value: h }))}
+      />
 
       <input
         type="radio"
@@ -78,23 +72,17 @@ const FilterInput = ({ headers, addFilter }) => {
       />
       <label for="exclude">Exclude</label>
 
-      <select
-        id="operator"
-        onChange={e => setOperator(OPERATORS[e.target.value])}
-      >
-        {OPERATORS.map((o, i) => (
-          <option value={i} key={o.code}>
-            {o.sign}
-          </option>
-        ))}
-      </select>
-
-      <input
-        type="text"
-        id="value"
-        name="value"
-        onChange={e => setValue(e.target.value)}
+      <Dropdown
+        placeholder="Operator"
+        search
+        selection
+        onChange={(e, d) => setOperator(d.value)}
+        options={OPERATORS.map(o => ({ text: o.sign, value: o }))}
       />
+
+      <Input
+        placeholder='Value'
+        onChange={(e, d) => setValue(d.value)}/>
 
       <Button onClick={handleAddFilter}>Add filter</Button>
     </div>
