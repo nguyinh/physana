@@ -1,26 +1,22 @@
 import React, { useReducer, useContext } from "react";
 import { SORT_DIRECTION } from "../res/constants";
-import { DataContext } from './DataContext';
-
-
 
 let reducer = (state, action) => {
   const { filters } = state;
 
-  console.log(action.type, action.payload)
   switch (action.type) {
     case "ADD_FILTER":
       return {
         ...state,
-        filters: [...filters, action.payload]
+        filters: [...filters, action.filter]
       };
     case "REMOVE_FILTER":
       return {
         ...state,
-        filters: filters.filter((_, i) => i !== action.payload)
+        filters: filters.filter((_, i) => i !== action.filterIndex)
       };
     case "SORT_BY_COLUMN":
-      return sortData(state, action.payload, action.headers);
+      return sortData(state, action.columnIndex, action.headers);
     default:
       return state;
   }

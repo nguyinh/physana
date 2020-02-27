@@ -24,7 +24,7 @@ const FilterTag = ({
       } `}</span>
       <Label.Detail
         onClick={() =>
-          dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
+          dispatch({ type: "REMOVE_FILTER", filterIndex })
         }
       >
         <Icon name="trash alternate outline" />
@@ -152,7 +152,7 @@ const Filters = ({ headers }) => {
             headers={headers}
             addFilter={f => {
               setIsCreatingFilter(false);
-              dispatch({ type: "ADD_FILTER", payload: f });
+              dispatch({ type: "ADD_FILTER", filter: f });
             }}
           />
         )}

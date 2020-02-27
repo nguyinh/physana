@@ -91,7 +91,7 @@ const HeaderCell = ({ children: value, style, columnIndex }) => {
     <div
       style={style}
       className="cell-container"
-      onClick={() => dispatch({ type: "SORT_BY_COLUMN", payload: columnIndex, headers })}
+      onClick={() => dispatch({ type: "SORT_BY_COLUMN", columnIndex, headers })}
     >
       <span className="cell-value">{value}</span>
     </div>

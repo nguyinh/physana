@@ -109,13 +109,6 @@ const TableView = () => {
           {data.length > 0 && (
             <Filters
               headers={data[0]}
-              filters={filters}
-              addFilter={newFilter =>
-                filterDispatch({ type: "ADD_FILTER", payload: newFilter })
-              }
-              removeFilter={filterIndex =>
-                filterDispatch({ type: "REMOVE_FILTER", payload: filterIndex })
-              }
             />
           )}
         </div>
