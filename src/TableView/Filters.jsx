@@ -1,21 +1,30 @@
 import React, { useState, useContext } from "react";
 import { OPERATORS } from "../res/constants";
 import { TableContext } from "./TableContext";
-import { Dropdown, Button, Input, Icon } from 'semantic-ui-react';
+import { Dropdown, Button, Input, Icon, Label } from 'semantic-ui-react';
 
 const FilterTag = ({filter: {header, isExcluded, operator, value}, filterIndex}) => {
   const { dispatch } = useContext(TableContext);
 
   return (
-    <span className={`filter-tag ${isExcluded ? "exclude" : "include"}`}>
-      <span className='filter-tag__excluding-condition'>{`${isExcluded ? "Exclude" : "Include"} `}</span>
+    <Label as="a" color={isExcluded ? "red" : "green"} image>
+      <Icon name={isExcluded ? "minus" : "plus"} />
+      <span className="filter-tag__excluding-condition">{`${
+        isExcluded ? "Exclude" : "Include"
+      } `}</span>
       <span>{`${isExcluded ? "all" : "only"} `}</span>
-      <span className='filter-tag__header'>{`${header} `}</span>
+      <span className="filter-tag__header">{`${header} `}</span>
       <span>which are </span>
-      <span className='filter-tag__operator'>{`${operator.label} `}</span>
-      <span className='filter-tag__value'>{`${value === '' && '\'\''} `}</span>
-      <Icon className='filter-tag__close-icon' name='trash alternate outline' onClick={() => dispatch({ type: "REMOVE_FILTER", payload: filterIndex })}/>
-    </span>
+      <span className="filter-tag__operator">{`${operator.label} `}</span>
+      <span className="filter-tag__value">{`${value === "" && "''"} `}</span>
+      <Label.Detail
+        onClick={() =>
+          dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
+        }
+      >
+        <Icon name="trash alternate outline" />
+      </Label.Detail>
+    </Label>
   );
 };
 
@@ -94,7 +103,7 @@ const Filters = ({ headers }) => {
     state: { filters },
     dispatch
   } = useContext(TableContext);
-  console.log(filters);
+
   const createFilter = () => {
     setIsCreatingFilter(true);
 
@@ -103,6 +112,16 @@ const Filters = ({ headers }) => {
 
   return (
     <div>
+      <div className="filter-tag-container">
+        {filters.map((f, i) => (
+          <FilterTag
+            key={`filter-${f.header}-${f.value}`}
+            filter={f}
+            filterIndex={i}
+          />
+        ))}
+      </div>
+
       {headers.length > 0 &&
         (isCreatingFilter ? (
           <FilterInput
@@ -113,20 +132,16 @@ const Filters = ({ headers }) => {
             }}
           />
         ) : (
-          <Button icon color='green' labelPosition='right' onClick={createFilter}>
+          <Button
+            icon
+            color="green"
+            labelPosition="right"
+            onClick={createFilter}
+          >
             Create filter
-            <Icon name='plus' />
+            <Icon name="plus" />
           </Button>
         ))}
-      <div className="filter-tag-container">
-        {filters.map((f, i) => (
-          <FilterTag
-            key={`filter-${f.header}-${f.value}`}
-            filter={f}
-            filterIndex={i}
-          />
-        ))}
-      </div>
     </div>
   );
 };

@@ -199,12 +199,12 @@ button {
 }
 
 .filter-tag-container {
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
   padding: 4px 0px;
 }
 
-.filter-tag {
+/* .filter-tag {
   display: inline-block;
   padding: 4px 15px;
   border-radius: 15px;
@@ -217,7 +217,7 @@ button {
 }
 .filter-tag.include {
   background: #97cff9;
-}
+} */
 
 .filter-tag__excluding-condition {
   font-weight: 700;
