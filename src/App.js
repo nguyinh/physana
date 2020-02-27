@@ -1,15 +1,18 @@
 import React from "react";
 import "./App.css";
 import TableView from './TableView/TableView.jsx';
-import { TableProvider } from './TableView/TableContext';
+import { FilterProvider } from './TableView/FilterContext';
+import { DataProvider } from './TableView/DataContext';
 
 const App = () => {
 
   return (
     <div className="App">
-      <TableProvider>
-        <TableView/>
-      </TableProvider>
+      <DataProvider>
+        <FilterProvider>
+          <TableView/>
+        </FilterProvider>
+      </DataProvider>
     </div>
   );
 };

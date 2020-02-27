@@ -1,13 +1,13 @@
 import React, { useState, useContext } from "react";
 import { OPERATORS } from "../res/constants";
-import { TableContext } from "./TableContext";
+import { FilterContext } from "./FilterContext";
 import { Dropdown, Button, Input, Icon, Label } from "semantic-ui-react";
 
 const FilterTag = ({
   filter: { header, isExcluded, operator, value },
   filterIndex
 }) => {
-  const { dispatch } = useContext(TableContext);
+  const { dispatch } = useContext(FilterContext);
 
   return (
     <Label as="a" color={isExcluded ? "red" : "blue"} image className='filter-tag'>
@@ -34,7 +34,7 @@ const FilterTag = ({
 };
 
 const FilterInput = ({ headers, addFilter }) => {
-  const [header, setHeader] = useState(headers[0]);
+  const [header, setHeader] = useState(headers[1]);
   const [isExcluded, setIsExcluded] = useState(false);
   const [operator, setOperator] = useState(OPERATORS[0]);
   const [value, setValue] = useState("");
@@ -57,7 +57,7 @@ const FilterInput = ({ headers, addFilter }) => {
         placeholder="Category"
         search
         selection
-        defaultValue={headers[1]}
+        defaultValue={header}
         onChange={(e, d) => setHeader(d.value)}
         options={headers.map(h => ({ text: h, value: h }))}
       />
@@ -113,7 +113,7 @@ const Filters = ({ headers }) => {
   const {
     state: { filters },
     dispatch
-  } = useContext(TableContext);
+  } = useContext(FilterContext);
 
   const createFilter = () => {
     setIsCreatingFilter(true);

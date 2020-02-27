@@ -194,12 +194,15 @@ button {
 
 .filter-tag-container {
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: row;
+  flex-wrap: wrap;
   font-weight: 500;
 }
 
 .filter-tag {
   padding: 8px !important;
+  overflow: hidden;
+  margin-right: 5px !important;
 }
 
 .filter-tag-creation {

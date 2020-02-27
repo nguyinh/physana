@@ -1,10 +1,13 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useContext } from "react";
 import { SORT_DIRECTION } from "../res/constants";
-import { formatAsInt } from "../res/utils";
+import { DataContext } from './DataContext';
+
+
 
 let reducer = (state, action) => {
-  const { filters, data, filteredData } = state;
+  const { filters } = state;
 
+  console.log(action.type, action.payload)
   switch (action.type) {
     case "ADD_FILTER":
       return {
@@ -17,30 +20,14 @@ let reducer = (state, action) => {
         filters: filters.filter((_, i) => i !== action.payload)
       };
     case "SORT_BY_COLUMN":
-      return sortData(state, action.payload);
-    case "FORMAT_CSV":
-      return setInitialData(state, action.payload);
-    case 'SET_DATA':
-      return { ...state, data: action.payload };
-    case "SET_FILTERED_DATA":
-      return { ...state, filteredData: action.payload };
+      return sortData(state, action.payload, action.headers);
     default:
       return state;
   }
 };
 
-const setInitialData = (state, formattedData) => {
-  return {
-    ...state,
-    initialData: formattedData,
-    data: formattedData,
-    filteredData: formattedData
-  };
-};
-
-const sortData = (state, columnIndex) => {
-  const { data, sortHeader, sortDirection } = state;
-  let [headers] = data;
+const sortData = (state, columnIndex, headers) => {
+  const { sortHeader, sortDirection } = state;
   const headerLabel = headers[columnIndex];
   if (sortHeader === headerLabel) {
     return {
@@ -60,23 +47,20 @@ const sortData = (state, columnIndex) => {
 };
 
 const initialState = {
-  initialData: [],
-  data: [],
-  filteredData: [],
   filters: [],
   sortHeader: null,
   sortDirection: SORT_DIRECTION.none
 };
 
-const TableContext = React.createContext(initialState);
+const FilterContext = React.createContext(initialState);
 
-function TableProvider(props) {
+function FilterProvider(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
-    <TableContext.Provider value={{ state, dispatch }}>
+    <FilterContext.Provider value={{ state, dispatch }}>
       {props.children}
-    </TableContext.Provider>
+    </FilterContext.Provider>
   );
 }
-export { TableContext, TableProvider };
+export { FilterContext, FilterProvider };

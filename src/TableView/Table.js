@@ -8,7 +8,9 @@ import {
 } from "react-virtualized";
 import { formatAsInt } from "../res/utils";
 
-import { TableContext } from "./TableContext";
+import { DataContext } from "./DataContext";
+
+import { FilterContext } from './FilterContext';
 
 const cache = new CellMeasurerCache({
   defaultWidth: 150,
@@ -82,13 +84,14 @@ const ConstantCell = ({ children: value, style }) => {
 };
 
 const HeaderCell = ({ children: value, style, columnIndex }) => {
-  const { dispatch } = useContext(TableContext);
+  const { dispatch } = useContext(FilterContext);
+  const { state: { data:[headers] } } = useContext(DataContext);
 
   return (
     <div
       style={style}
       className="cell-container"
-      onClick={() => dispatch({ type: "SORT_BY_COLUMN", payload: columnIndex })}
+      onClick={() => dispatch({ type: "SORT_BY_COLUMN", payload: columnIndex, headers })}
     >
       <span className="cell-value">{value}</span>
     </div>
@@ -96,7 +99,7 @@ const HeaderCell = ({ children: value, style, columnIndex }) => {
 };
 
 const Table = ({ data }) => {
-  const { state, dispatch } = useContext(TableContext);
+  const { state, dispatch } = useContext(DataContext);
 
   const [headers, ...content] = data; // Replace by filteredData ?
   const [isEditing, setIsEditing] = useState(false);

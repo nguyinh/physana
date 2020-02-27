@@ -5,13 +5,19 @@ import CSVReader from "react-csv-reader";
 import { formatAsInt, mockData } from "../res/utils";
 import { SORT_DIRECTION } from "../res/constants";
 
-import { TableContext } from "./TableContext";
+import { FilterContext } from "./FilterContext";
+import { DataContext } from "./DataContext";
 
 const TableView = () => {
   const {
-    state: { data, filteredData, sortHeader, sortDirection, filters },
-    dispatch
-  } = useContext(TableContext);
+    state: { filters, sortHeader, sortDirection },
+    dispatch: filterDispatch
+  } = useContext(FilterContext);
+
+  const {
+    state: { data, filteredData },
+    dispatch: dataDispatch
+  } = useContext(DataContext);
 
   const formatCSVData = data => {
     let [headers, ...rest] = data;
@@ -22,7 +28,7 @@ const TableView = () => {
       )
     );
 
-    dispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
+    dataDispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
   };
 
   useEffect(() => {
@@ -55,7 +61,7 @@ const TableView = () => {
       });
     });
 
-    dispatch({ type: "SET_FILTERED_DATA", payload: [headers, ...newContent] });
+    dataDispatch({ type: "SET_FILTERED_DATA", payload: [headers, ...newContent] });
   }, [filters, data]);
 
   useEffect(() => {
@@ -75,7 +81,7 @@ const TableView = () => {
         : 0
     );
 
-    dispatch({
+    dataDispatch({
       type: "SET_FILTERED_DATA",
       payload: [headers, ...sortedContent]
     });
@@ -105,10 +111,10 @@ const TableView = () => {
               headers={data[0]}
               filters={filters}
               addFilter={newFilter =>
-                dispatch({ type: "ADD_FILTER", payload: newFilter })
+                filterDispatch({ type: "ADD_FILTER", payload: newFilter })
               }
               removeFilter={filterIndex =>
-                dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
+                filterDispatch({ type: "REMOVE_FILTER", payload: filterIndex })
               }
             />
           )}
