@@ -28,7 +28,7 @@ const TableView = () => {
       )
     );
 
-    dataDispatch({ type: "FORMAT_CSV", payload: [headers, ...rest] });
+    dataDispatch({ type: "FORMAT_CSV", data: [headers, ...rest] });
   };
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const TableView = () => {
       });
     });
 
-    dataDispatch({ type: "SET_FILTERED_DATA", payload: [headers, ...newContent] });
+    dataDispatch({ type: "SET_FILTERED_DATA", data: [headers, ...newContent] });
   }, [filters, data]);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const TableView = () => {
 
     dataDispatch({
       type: "SET_FILTERED_DATA",
-      payload: [headers, ...sortedContent]
+      data: [headers, ...sortedContent]
     });
   }, [sortDirection, sortHeader]);
 

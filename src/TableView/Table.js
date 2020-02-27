@@ -160,7 +160,7 @@ const Table = ({ data }) => {
             updateData={value =>
               dispatch({
                 type: "SET_DATA",
-                payload: state.data.map(row =>
+                data: state.data.map(row =>
                   row[0] !== rowId
                     ? row
                     : row.map((col, c) => (c !== columnIndex ? col : value))

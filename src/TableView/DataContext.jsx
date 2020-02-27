@@ -6,11 +6,11 @@ let reducer = (state, action) => {
 
   switch (action.type) {
     case "FORMAT_CSV":
-      return setInitialData(state, action.payload);
+      return setInitialData(state, action.data);
     case 'SET_DATA':
-      return { ...state, data: action.payload };
+      return { ...state, data: action.data };
     case "SET_FILTERED_DATA":
-      return { ...state, filteredData: action.payload };
+      return { ...state, filteredData: action.data };
     default:
       return state;
   }
