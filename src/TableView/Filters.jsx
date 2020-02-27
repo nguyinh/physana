@@ -1,13 +1,16 @@
 import React, { useState, useContext } from "react";
 import { OPERATORS } from "../res/constants";
 import { TableContext } from "./TableContext";
-import { Dropdown, Button, Input, Icon, Label } from 'semantic-ui-react';
+import { Dropdown, Button, Input, Icon, Label } from "semantic-ui-react";
 
-const FilterTag = ({filter: {header, isExcluded, operator, value}, filterIndex}) => {
+const FilterTag = ({
+  filter: { header, isExcluded, operator, value },
+  filterIndex
+}) => {
   const { dispatch } = useContext(TableContext);
 
   return (
-    <Label as="a" color={isExcluded ? "red" : "green"} image>
+    <Label as="a" color={isExcluded ? "red" : "blue"} image className='filter-tag'>
       <Icon name={isExcluded ? "minus" : "plus"} />
       <span className="filter-tag__excluding-condition">{`${
         isExcluded ? "Exclude" : "Include"
@@ -16,7 +19,9 @@ const FilterTag = ({filter: {header, isExcluded, operator, value}, filterIndex})
       <span className="filter-tag__header">{`${header} `}</span>
       <span>which are </span>
       <span className="filter-tag__operator">{`${operator.label} `}</span>
-      <span className="filter-tag__value">{`${value === "" && "''"} `}</span>
+      <span className="filter-tag__value">{`${
+        value === "" ? "nothing" : value
+      } `}</span>
       <Label.Detail
         onClick={() =>
           dispatch({ type: "REMOVE_FILTER", payload: filterIndex })
@@ -46,8 +51,9 @@ const FilterInput = ({ headers, addFilter }) => {
   };
 
   return (
-    <div className='filter-tag-creation'>
+    <div className="filter-tag-creation">
       <Dropdown
+        className="filter-tag-creation__part"
         placeholder="Category"
         search
         selection
@@ -56,15 +62,12 @@ const FilterInput = ({ headers, addFilter }) => {
         options={headers.map(h => ({ text: h, value: h }))}
       />
 
-      <Button.Group>
+      <Button.Group className="filter-tag-creation__part">
         <Button
           onClick={() => setIsExcluded(false)}
           active={!isExcluded}
-          color={!isExcluded && "green"}
+          color={!isExcluded && "blue"}
         >
-          <span role="img" aria-label="include-icon">
-            ✅
-          </span>{" "}
           Include
         </Button>
         <Button.Or />
@@ -73,14 +76,12 @@ const FilterInput = ({ headers, addFilter }) => {
           active={isExcluded}
           color={isExcluded && "red"}
         >
-          <span role="img" aria-label="exclude-icon">
-            ❌
-          </span>{" "}
           Exclude
         </Button>
       </Button.Group>
 
       <Dropdown
+        className="filter-tag-creation__part"
         placeholder="Operator"
         search
         selection
@@ -89,9 +90,19 @@ const FilterInput = ({ headers, addFilter }) => {
         options={OPERATORS.map(o => ({ text: o.sign, value: o }))}
       />
 
-      <Input placeholder="Value" onChange={(e, d) => setValue(d.value)} />
+      <Input
+        className="filter-tag-creation__part"
+        placeholder="Value to compare"
+        onChange={(e, d) => setValue(d.value)}
+      />
 
-      <Button circular icon='check' onClick={handleAddFilter}/>
+      <Button
+        className="filter-tag-creation__button"
+        circular
+        icon="check"
+        color="green"
+        onClick={handleAddFilter}
+      />
     </div>
   );
 };
@@ -120,10 +131,23 @@ const Filters = ({ headers }) => {
             filterIndex={i}
           />
         ))}
+        {!isCreatingFilter && (
+          <Button
+            icon
+            color="green"
+            labelPosition="right"
+            ghost
+            size="mini"
+            onClick={createFilter}
+          >
+            Create filter
+            <Icon name="plus" />
+          </Button>
+        )}
       </div>
 
       {headers.length > 0 &&
-        (isCreatingFilter ? (
+        isCreatingFilter && (
           <FilterInput
             headers={headers}
             addFilter={f => {
@@ -131,17 +155,7 @@ const Filters = ({ headers }) => {
               dispatch({ type: "ADD_FILTER", payload: f });
             }}
           />
-        ) : (
-          <Button
-            icon
-            color="green"
-            labelPosition="right"
-            onClick={createFilter}
-          >
-            Create filter
-            <Icon name="plus" />
-          </Button>
-        ))}
+        )}
     </div>
   );
 };

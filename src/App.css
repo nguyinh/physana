@@ -192,16 +192,25 @@ button {
   color: #02e802;
 } */
 
-.filter-tag-creation {
+.filter-tag-container {
   display: flex;
-  justify-content: space-around;
-  width: 80%;
+  /* flex-direction: column; */
+  font-weight: 500;
 }
 
-.filter-tag-container {
-  /* display: flex;
-  flex-direction: column; */
+.filter-tag {
+  padding: 8px !important;
+}
+
+.filter-tag-creation {
+  display: flex;
+  /* justify-content: space-around; */
+  width: 80%;
   padding: 4px 0px;
+}
+
+.filter-tag-container span {
+  font-weight: 300;
 }
 
 /* .filter-tag {
@@ -220,22 +229,27 @@ button {
 } */
 
 .filter-tag__excluding-condition {
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 .filter-tag__header {
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 .filter-tag__operator {
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 .filter-tag__value {
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 .filter-tag__close-icon {
   margin-left: 6px !important;
   margin-right: -3px !important;
+}
+
+
+.filter-tag-creation__part {
+  margin-right: 5px !important;
 }
