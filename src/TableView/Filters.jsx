@@ -66,7 +66,7 @@ const FilterInput = ({ headers, addFilter }) => {
         <Button
           onClick={() => setIsExcluded(false)}
           active={!isExcluded}
-          color={!isExcluded && "blue"}
+          color={!isExcluded ? 'blue' : null}
         >
           Include
         </Button>
@@ -74,7 +74,7 @@ const FilterInput = ({ headers, addFilter }) => {
         <Button
           onClick={() => setIsExcluded(true)}
           active={isExcluded}
-          color={isExcluded && "red"}
+          color={isExcluded ? 'red' : null}
         >
           Exclude
         </Button>
@@ -87,7 +87,7 @@ const FilterInput = ({ headers, addFilter }) => {
         selection
         compact
         onChange={(e, d) => setOperator(d.value)}
-        options={OPERATORS.map(o => ({ text: o.sign, value: o }))}
+        options={OPERATORS.map(o => ({ key: o.code, text: o.sign, value: o }))}
       />
 
       <Input
@@ -136,7 +136,6 @@ const Filters = ({ headers }) => {
             icon
             color="green"
             labelPosition="right"
-            ghost
             size="mini"
             onClick={createFilter}
           >

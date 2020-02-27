@@ -106,11 +106,7 @@ const TableView = () => {
             />
           )}
 
-          {data.length > 0 && (
-            <Filters
-              headers={data[0]}
-            />
-          )}
+          {data.length > 0 && <Filters headers={data[0]} />}
         </div>
       </div>
 
