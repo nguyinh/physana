@@ -11,7 +11,7 @@ import { DataContext } from "./DataContext";
 const TableView = () => {
   const {
     state: { filters, sortHeader, sortDirection },
-    dispatch: filterDispatch
+    // dispatch: filterDispatch
   } = useContext(FilterContext);
 
   const {
@@ -36,7 +36,7 @@ const TableView = () => {
 
     let [headers, ...content] = data;
 
-    const newContent = content.filter(row => {
+    content = content.filter(row => {
       return !filters.some(({ header, operator, value, isExcluded }) => {
         const columnIndex = headers.findIndex(h => h === header);
         const filterValue = formatAsInt(value);
@@ -61,15 +61,10 @@ const TableView = () => {
       });
     });
 
-    dataDispatch({ type: "SET_FILTERED_DATA", data: [headers, ...newContent] });
-  }, [filters, data]);
-
-  useEffect(() => {
     if (filteredData.length <= 1) return;
 
-    const [headers, ...content] = filteredData;
     const headerIndex = headers.findIndex(h => h === sortHeader);
-    const sortedContent = content.sort((a, b) =>
+    content = content.sort((a, b) =>
       a[headerIndex] < b[headerIndex]
         ? sortDirection === SORT_DIRECTION.asc
           ? 1
@@ -81,11 +76,8 @@ const TableView = () => {
         : 0
     );
 
-    dataDispatch({
-      type: "SET_FILTERED_DATA",
-      data: [headers, ...sortedContent]
-    });
-  }, [sortDirection, sortHeader]);
+    dataDispatch({ type: "SET_FILTERED_DATA", data: [headers, ...content] });
+  }, [filters, sortDirection, sortHeader, data]);
 
   return (
     <>
