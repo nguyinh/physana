@@ -102,7 +102,17 @@ button {
 
 .selection-headers-container > button {
   margin: 0.5rem 0rem !important;
+  transition: 175ms !important;
 } 
+.selection-headers-container > button.with-opacity {
+  opacity: 0.4;
+}
+
+.selection-headers-confirm {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
 
 
 .table {

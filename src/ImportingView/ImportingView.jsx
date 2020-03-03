@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import CSVReader from "react-csv-reader";
 import { formatAsInt } from "../res/utils";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, Icon, Header } from "semantic-ui-react";
 import { DataContext } from "../TableView/DataContext";
 
 const ImportingView = () => {
@@ -76,11 +76,14 @@ const ImportingView = () => {
             />
           ) : (
             <>
+              <Header as="h1">Select columns to import 👇</Header>
+
               <div className="selection-headers-container">
                 {selectionHeaders.map(header => (
                   <Button
                     key={header.columnIndex}
                     color={header.isSelected ? "blue" : "red"}
+                    className={!header.isSelected ? 'with-opacity' : ''}
                     onClick={() => toggleHeader(header.columnIndex)}
                     icon
                     labelPosition="right"
@@ -96,15 +99,16 @@ const ImportingView = () => {
                 ))}
               </div>
 
-              <Button
-                color='green'
-                size='big'
-                floated='right'
-                disabled={selectionHeaders.every(h => !h.isSelected)}
-                onClick={filterColumns}
-              >
-                Confirm columns
-              </Button>
+              <div className="selection-headers-confirm">
+                <Button
+                  color="green"
+                  size="big"
+                  disabled={selectionHeaders.every(h => !h.isSelected)}
+                  onClick={filterColumns}
+                >
+                  Confirm columns
+                </Button>
+              </div>
             </>
           )}
         </div>
