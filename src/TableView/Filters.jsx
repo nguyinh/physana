@@ -126,7 +126,7 @@ const Filters = ({ headers }) => {
       <div className="filter-tag-container">
         {filters.map((f, i) => (
           <FilterTag
-            key={`filter-${f.header}-${f.value}`}
+            key={`filter-${f.header}-${f.operator.sign}-${f.value}-${i}`}
             filter={f}
             filterIndex={i}
           />

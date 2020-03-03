@@ -4,10 +4,13 @@ const {
 } = require('electron');
 
 function createWindow() {
-  // Create the browser window.     
+  // Create the browser window.  
   const win = new BrowserWindow({
     width: 1600,
-    height: 1000
+    height: 1000,
+    webPreferences: {
+      nodeIntegration: true,
+    }
   });
 
   win.webContents.openDevTools();

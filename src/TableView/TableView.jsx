@@ -4,13 +4,13 @@ import Filters from "./Filters";
 import CSVReader from "react-csv-reader";
 import { formatAsInt, mockData } from "../res/utils";
 import { SORT_DIRECTION } from "../res/constants";
-
+import { Button, Icon } from "semantic-ui-react";
 import { FilterContext } from "./FilterContext";
 import { DataContext } from "./DataContext";
 
 const TableView = () => {
   const {
-    state: { filters, sortHeader, sortDirection },
+    state: { filters, sortHeader, sortDirection }
     // dispatch: filterDispatch
   } = useContext(FilterContext);
 
@@ -83,7 +83,7 @@ const TableView = () => {
     <>
       <div className="tables-header">
         <div className="tables-header-content">
-          {!data.length && (
+          {!data.length ? (
             <CSVReader
               onFileLoaded={data => formatCSVData(data)}
               parserOptions={{ skipEmptyLines: true }}
@@ -96,6 +96,17 @@ const TableView = () => {
               cssClass="csv-reader-input"
               inputId="csv-input"
             />
+          ) : (
+            <Button
+              icon
+              color="blue"
+              labelPosition="right"
+              size="mini"
+              onClick={() => dataDispatch({ type: "EXPORT_DATA" })}
+            >
+              Export data
+              <Icon name="plus" />
+            </Button>
           )}
 
           {data.length > 0 && <Filters headers={data[0]} />}
