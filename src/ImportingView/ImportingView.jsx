@@ -8,17 +8,13 @@ const ImportingView = () => {
   const [selectionHeaders, setSelectionHeaders] = useState([]);
   const [csvContent, setCsvContent] = useState([]);
 
-  const {
-    dispatch: dataDispatch
-  } = useContext(DataContext);
+  const { dispatch: dataDispatch } = useContext(DataContext);
 
   const handleCSVLoaded = csvData => {
     let [headers, ...rest] = csvData;
     headers = headers.filter(header => header !== "");
-    rest = rest.map((row) =>
-      row.splice(0, headers.length - 1).map(cell =>
-        formatAsInt(cell)
-      )
+    rest = rest.map(row =>
+      row.splice(0, headers.length).map(cell => formatAsInt(cell))
     );
 
     setCsvContent([headers, ...rest]);
@@ -34,23 +30,21 @@ const ImportingView = () => {
 
   const toggleHeader = columnIndex => {
     setSelectionHeaders(selectionHeaders => {
-      return selectionHeaders.map((h, i) => ({
+      return selectionHeaders.map(h => ({
         ...h,
-        isSelected: columnIndex === i ? !h.isSelected : h.isSelected
+        isSelected: columnIndex === h.columnIndex ? !h.isSelected : h.isSelected
       }));
     });
   };
 
   const filterColumns = () => {
-    const filteredColumns = selectionHeaders.filter(header => !header.isSelected);
-    console.table(filteredColumns);
-    const filteredColumnsIndexes = filteredColumns.map(col => col.columnIndex);
+    const indexesToFilter = selectionHeaders
+      .filter(header => !header.isSelected)
+      .map(col => col.columnIndex);
 
-    const filteredColumnsData = csvContent.map((row, rowIndex) => {
-      return row.filter((cell, columnIndex) => {
-        return !filteredColumnsIndexes.includes(columnIndex);
-      });
-    });
+    const filteredColumnsData = csvContent.map((row, rowIndex) =>
+      row.filter((cell, columnIndex) => !indexesToFilter.includes(columnIndex))
+    );
 
     let [headers, ...rest] = filteredColumnsData;
     headers = ["id", ...headers.filter(header => header !== "")];
@@ -60,7 +54,7 @@ const ImportingView = () => {
       )
     );
 
-    dataDispatch({type: 'SET_DATA', data: [headers, ...rest]})
+    dataDispatch({ type: "SET_DATA", data: [headers, ...rest] });
   };
 
   return (
@@ -82,19 +76,35 @@ const ImportingView = () => {
             />
           ) : (
             <>
-              {selectionHeaders.map(header => (
-                <Button
-                  size="mini"
-                  key={header.columnIndex}
-                  color={header.isSelected ? "green" : "red"}
-                  onClick={() => toggleHeader(header.columnIndex)}
-                >
-                  {header.label}
-                </Button>
-              ))}
+              <div className="selection-headers-container">
+                {selectionHeaders.map(header => (
+                  <Button
+                    key={header.columnIndex}
+                    color={header.isSelected ? "blue" : "red"}
+                    onClick={() => toggleHeader(header.columnIndex)}
+                    icon
+                    labelPosition="right"
+                    circular
+                  >
+                    {header.label}
+                    {header.isSelected ? (
+                      <Icon name="check" />
+                    ) : (
+                      <Icon name="close" />
+                    )}
+                  </Button>
+                ))}
+              </div>
+
               <Button
-                color={"blue"}
-                onClick={filterColumns}>Confirm columns</Button>
+                color='green'
+                size='big'
+                floated='right'
+                disabled={selectionHeaders.every(h => !h.isSelected)}
+                onClick={filterColumns}
+              >
+                Confirm columns
+              </Button>
             </>
           )}
         </div>
