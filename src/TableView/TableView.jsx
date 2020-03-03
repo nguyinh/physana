@@ -61,20 +61,20 @@ const TableView = () => {
       });
     });
 
-    if (filteredData.length <= 1) return;
-
-    const headerIndex = headers.findIndex(h => h === sortHeader);
-    content = content.sort((a, b) =>
-      a[headerIndex] < b[headerIndex]
-        ? sortDirection === SORT_DIRECTION.asc
-          ? 1
-          : -1
-        : a[headerIndex] > b[headerIndex]
-        ? sortDirection === SORT_DIRECTION.asc
-          ? -1
-          : 1
-        : 0
-    );
+    if (filteredData.length > 1) {
+      const headerIndex = headers.findIndex(h => h === sortHeader);
+      content = content.sort((a, b) =>
+        a[headerIndex] < b[headerIndex]
+          ? sortDirection === SORT_DIRECTION.asc
+            ? 1
+            : -1
+          : a[headerIndex] > b[headerIndex]
+          ? sortDirection === SORT_DIRECTION.asc
+            ? -1
+            : 1
+          : 0
+      );
+    }
 
     dataDispatch({ type: "SET_FILTERED_DATA", data: [headers, ...content] });
   }, [filters, sortDirection, sortHeader, data]);
