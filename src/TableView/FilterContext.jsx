@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from "react";
+import React, { useReducer } from "react";
 import { SORT_DIRECTION } from "../res/constants";
 
 let reducer = (state, action) => {
