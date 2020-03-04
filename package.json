@@ -2,6 +2,7 @@
   "name": "physana",
   "version": "0.1.0",
   "private": true,
+  "author": "Florent DUPONT <florent.dupontnguyen@gmail.com>",
   "main": "public/Main.js",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -19,7 +20,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-start": "electron ."
+    "electron-start": "electron .",
+    "postinstall": "install-app-deps",
+    "preelectron-pack": "npm build",
+    "pack": "electron-builder --em.main=build/Main.js",
+    "dist": "electron-builder"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -36,7 +41,22 @@
       "last 1 safari version"
     ]
   },
+  "build": {
+    "appId": "com.electron.physana",
+    "productName": "PhysAna",
+    "files": [
+      "./public/**/*",
+      "./build/**/*",
+      "./node_modules/**/*"
+    ],
+    "directories":{
+      "buildResources": "assets"
+    },
+    "extends": null
+  },
+  "homepage": "./",
   "devDependencies": {
-    "electron": "^8.0.0"
+    "electron": "^8.0.0",
+    "electron-builder": "^22.3.6"
   }
 }
