@@ -15,7 +15,7 @@ function createWindow() {
     }
   });
 
-  win.webContents.openDevTools();
+  if(isDev) win.webContents.openDevTools();
 
   win.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
 }
