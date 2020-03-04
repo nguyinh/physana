@@ -101,11 +101,10 @@ const TableView = () => {
               icon
               color="blue"
               labelPosition="right"
-              size="mini"
               onClick={() => dataDispatch({ type: "EXPORT_DATA" })}
             >
               Export data
-              <Icon name="plus" />
+              <Icon name="save outline" />
             </Button>
           )}
 
