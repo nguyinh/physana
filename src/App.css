@@ -43,11 +43,17 @@ button {
   background-color: #f3f4f5;
 }
 
+.csv-reader-input > label {
+  /* background: red; */
+  padding: 0.5rem 2rem;
+  height: 2rem;
+  display: inline-table;
+}
 .csv-reader-input {
   user-select: none;
   cursor: pointer;
   font-size: 1em;
-  padding: 0.25em 0.75em;
+  /* padding: 0.25em 0.75em; */
   font-weight: 600;
   color: white;
   background-color: #a8b0ff;
@@ -160,7 +166,7 @@ button {
 }
 
 .tables-header {
-  height: 17%;
+  /* height: 17%; */
   margin-bottom: 3%;
   background: #e4e8ff;
   border-radius: 15px;
@@ -168,7 +174,14 @@ button {
 }
 
 .tables-header-content {
-  
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.tables-header-actions {
+  position: absolute;
+  right: 0px;
 }
 
 .table-header {
@@ -220,6 +233,10 @@ button {
   flex-direction: row;
   flex-wrap: wrap;
   font-weight: 500;
+}
+
+.filter-tag-container a, .filter-tag-container button {
+  margin: 0.25rem 0.5rem !important;
 }
 
 .filter-tag {

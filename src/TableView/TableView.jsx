@@ -83,30 +83,17 @@ const TableView = () => {
     <>
       <div className="tables-header">
         <div className="tables-header-content">
-          {!data.length ? (
-            <CSVReader
-              onFileLoaded={data => formatCSVData(data)}
-              parserOptions={{ skipEmptyLines: true }}
-              label={
-                <>
-                  <span className="plus-prefix">+</span>{" "}
-                  <span className="label-suffix">Insert your CSV file</span>
-                </>
-              }
-              cssClass="csv-reader-input"
-              inputId="csv-input"
-            />
-          ) : (
+          <div className="tables-header-actions">
             <Button
               icon
-              color="blue"
+              color="teal"
               labelPosition="right"
               onClick={() => dataDispatch({ type: "EXPORT_DATA" })}
             >
-              Export data
+              Export data as CSV
               <Icon name="save outline" />
             </Button>
-          )}
+          </div>
 
           {data.length > 0 && <Filters headers={data[0]} />}
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { OPERATORS } from "../res/constants";
 import { FilterContext } from "./FilterContext";
-import { Dropdown, Button, Input, Icon, Label } from "semantic-ui-react";
+import { Dropdown, Button, Input, Icon, Label, Header} from "semantic-ui-react";
 
 const FilterTag = ({
   filter: { header, isExcluded, operator, value },
@@ -123,6 +123,8 @@ const Filters = ({ headers }) => {
 
   return (
     <div>
+      <Header as="h1">Filter data 🔎</Header>
+
       <div className="filter-tag-container">
         {filters.map((f, i) => (
           <FilterTag
