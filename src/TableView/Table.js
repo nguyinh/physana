@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Grid,
   AutoSizer,
@@ -10,11 +10,11 @@ import { formatAsInt } from "../res/utils";
 
 import { DataContext } from "./DataContext";
 
-import { FilterContext } from './FilterContext';
+import { FilterContext } from "./FilterContext";
 
 const cache = new CellMeasurerCache({
   defaultWidth: 150,
-  minWidth: 150,
+  minWidth: 50,
   fixedHeight: true
 });
 
@@ -27,6 +27,7 @@ const InputCell = ({ initialValue, style, updateData }) => {
       className="cell-input"
       autoFocus
       onBlur={() => updateData(formatAsInt(value))}
+      onKeyDown={e => e.keyCode === 13 && updateData(formatAsInt(value))}
       onChange={e => setValue(e.target.value)}
     />
   );
@@ -37,7 +38,9 @@ const EditableCell = ({
   style,
   updateData,
   isEditing,
-  setIsEditing
+  setIsEditing,
+  even,
+  isScrolling
 }) => {
   const [isEditable, setIsEditable] = useState(false);
 
@@ -54,10 +57,22 @@ const EditableCell = ({
     updateData(newCellValue);
   };
 
-  const animateBackground = !isEditing ? 'editable-cell' : '';
+  useEffect(() => {
+    if (isScrolling && isEditable) {
+      setIsEditable(false);
+      setIsEditing(false);
+    }
+  }, [isScrolling])
+
+  const animateBackground = !isEditing ? "editable-cell" : "";
+  const parity = even ? 'even' : 'odd';
 
   return (
-    <div style={style} className={`cell-container ${animateBackground}`} onClick={handleCellClick}>
+    <div
+      style={style}
+      className={`cell-container body-cell ${parity} ${animateBackground}`}
+      onClick={handleCellClick}
+    >
       {isEditable ? (
         <InputCell
           style={style}
@@ -71,13 +86,19 @@ const EditableCell = ({
   );
 };
 
-const ConstantCell = ({ children: value, style }) => {
+const ConstantCell = ({ children: value, style, even }) => {
   const handleCellClick = () => {
     console.log("Constant cell clicked");
   };
 
+  const parity = even ? 'even' : 'odd';
+
   return (
-    <div style={style} className="cell-container" onClick={handleCellClick}>
+    <div
+      style={style}
+      className={`cell-container id-cell ${parity}`}
+      onClick={handleCellClick}
+    >
       <span className="cell-value">{value}</span>
     </div>
   );
@@ -85,12 +106,16 @@ const ConstantCell = ({ children: value, style }) => {
 
 const HeaderCell = ({ children: value, style, columnIndex }) => {
   const { dispatch } = useContext(FilterContext);
-  const { state: { data:[headers] } } = useContext(DataContext);
+  const {
+    state: {
+      data: [headers]
+    }
+  } = useContext(DataContext);
 
   return (
     <div
       style={style}
-      className="cell-container"
+      className="cell-container header-cell"
       onClick={() => dispatch({ type: "SORT_BY_COLUMN", columnIndex, headers })}
     >
       <span className="cell-value">{value}</span>
@@ -104,14 +129,15 @@ const Table = ({ data }) => {
   const [headers, ...content] = data; // Replace by filteredData ?
   const [isEditing, setIsEditing] = useState(false);
 
-  const renderHeaderCell = ({ columnIndex, key, parent, rowIndex, style }) => {
-    const headerStyle = {
-      ...style,
-      textAlign: "center",
-      fontWeight: "bold",
-      backgroundColor: "#cbd2ff"
-      // color: '#000000b5'
-    };
+  const renderHeaderCell = ({
+    columnIndex,
+    key,
+    parent,
+    rowIndex,
+    style,
+    isVisible
+  }) => {
+    if (!isVisible) return null;
 
     return (
       <CellMeasurer
@@ -120,23 +146,31 @@ const Table = ({ data }) => {
         key={key}
         parent={parent}
       >
-        <HeaderCell style={headerStyle} columnIndex={columnIndex}>
+        <HeaderCell style={style} columnIndex={columnIndex}>
           {headers[columnIndex]}
         </HeaderCell>
       </CellMeasurer>
     );
   };
 
-  const renderContentCell = ({ columnIndex, key, parent, rowIndex, style }) => {
-    const cellStyle = {
-      ...style,
-      backgroundColor: columnIndex === 0
-        ? rowIndex % 2 ? "#eae8e8" : "#f2f2f2"
-        : rowIndex % 2 ? "#fafafc" : "#fff",
-      color: "#404040",
-      fontWeight: columnIndex === 0 && '600'
-      // textAlign: rowIndex === 0 && "center"
-    };
+  const renderContentCell = ({
+    columnIndex,
+    key,
+    parent,
+    rowIndex,
+    style,
+    isVisible,
+    isScrolling
+  }) => {
+    if (!isVisible) return null;
+
+    // if (isScrolling)
+    //   return (
+    //     <div style={style} className={"cell-container"}>
+    //       <span className="cell-value">{content[rowIndex][columnIndex]}</span>
+    //     </div>
+    //   );
+
     const rowId = content[rowIndex][0];
 
     return (
@@ -148,15 +182,17 @@ const Table = ({ data }) => {
         rowIndex={rowIndex}
       >
         {columnIndex === 0 ? (
-          <ConstantCell key={key} style={cellStyle}>
+          <ConstantCell key={key} style={style} even={rowIndex % 2}>
             {content[rowIndex][columnIndex]}
           </ConstantCell>
         ) : (
           <EditableCell
             key={key}
-            style={cellStyle}
+            even={rowIndex % 2}
+            style={style}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            isScrolling={isScrolling}
             updateData={value =>
               dispatch({
                 type: "SET_DATA",
@@ -215,6 +251,8 @@ const Table = ({ data }) => {
                       cellRenderer={renderContentCell}
                       columnCount={content[0].length}
                       columnWidth={cache.columnWidth}
+                      // overscanColumnCount={10}
+                      // overscanRowCount={50}
                       deferredMeasurementCache={cache}
                       height={height - 50}
                       rowCount={content.length}

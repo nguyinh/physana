@@ -134,12 +134,14 @@ button {
 }
 
 .editable-cell {
-  transition: 0.2s;
+  /* transition: 0.2s; */
 
 }
 .editable-cell:hover {
   background-color: #0000ff33 !important;
-  /* border: 1px solid #221fcf1d; */
+  /* border: 3px solid #1917a74e;
+  border-radius: 10px; */
+  transition: background-color 0.3s;
 }
 
 .cell-input {
@@ -206,7 +208,35 @@ button {
   outline: none;
 }
 
+.header-cell {
+  text-align: center;
+  font-weight: bold;
+  background-color: #cbd2ff;
+}
 
+.body-cell {
+  color: #404040;
+}
+
+.body-cell.even {
+  background-color: #fafafc;
+}
+
+.body-cell.odd {
+  background-color: #fff;
+}
+
+.id-cell {
+  font-weight: 600;
+}
+
+.id-cell.odd {
+  background-color: #f2f2f2;
+}
+
+.id-cell.even {
+  background-color: #eae8e8;
+}
 
 /* .create-filter-button {
   user-select: none;
