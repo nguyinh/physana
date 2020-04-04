@@ -1,7 +1,15 @@
 import React, { useState, useContext } from "react";
 import CSVReader from "react-csv-reader";
 import { formatAsInt } from "../res/utils";
-import { Button, Icon, Header } from "semantic-ui-react";
+import {
+  Button,
+  Icon,
+  Header,
+  Segment,
+  Grid,
+  Divider,
+  Search
+} from "semantic-ui-react";
 import { DataContext } from "../TableView/DataContext";
 
 const ImportingView = () => {
@@ -59,59 +67,77 @@ const ImportingView = () => {
 
   return (
     <div>
-      <div className="tables-header">
-        <div className="tables-header-content">
-          {!selectionHeaders.length ? (
-            <CSVReader
-              onFileLoaded={data => handleCSVLoaded(data)}
-              parserOptions={{ skipEmptyLines: true }}
-              label={
-                <>
-                  <span className="plus-prefix">+</span>{" "}
-                  <span className="label-suffix">Insert your CSV file</span>
-                </>
-              }
-              cssClass="csv-reader-input"
-              inputId="csv-input"
-            />
-          ) : (
-            <>
-              <Header as="h1">Select columns to import 👇</Header>
+      <div className="tables-header-content">
+        {!selectionHeaders.length ? (
+          <Segment placeholder>
+            <Grid columns={2} stackable textAlign="center">
+              <Divider vertical>Or</Divider>
 
-              <div className="selection-headers-container">
-                {selectionHeaders.map(header => (
-                  <Button
-                    key={header.columnIndex}
-                    color={header.isSelected ? "blue" : "red"}
-                    className={!header.isSelected ? 'with-opacity' : ''}
-                    onClick={() => toggleHeader(header.columnIndex)}
-                    icon
-                    labelPosition="right"
-                    circular
-                  >
-                    {header.label}
-                    {header.isSelected ? (
-                      <Icon name="check" />
-                    ) : (
-                      <Icon name="close" />
-                    )}
+              <Grid.Row verticalAlign="middle">
+                <Grid.Column>
+                  <Header icon>
+                    <Icon name="search" />
+                    Open a project
+                  </Header>
+
+                  <Search placeholder="Work in progress..." disabled/>
+                </Grid.Column>
+
+                <Grid.Column>
+                  <Header icon>
+                    <Icon name="file" />
+                    Select CSV file
+                  </Header>
+                  <Button primary className="import-button">
+                    <CSVReader
+                      onFileLoaded={data => handleCSVLoaded(data)}
+                      parserOptions={{ skipEmptyLines: true }}
+                      label="Import"
+                      cssClass="csv-reader-input-wip"
+                      inputId="csv-input"
+                    />
                   </Button>
-                ))}
-              </div>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Segment>
+        ) : (
+          <div className="tables-header">
+            <Header as="h1">Select columns to import 👇</Header>
 
-              <div className="selection-headers-confirm">
+            <div className="selection-headers-container">
+              {selectionHeaders.map(header => (
                 <Button
-                  color="green"
-                  size="big"
-                  disabled={selectionHeaders.every(h => !h.isSelected)}
-                  onClick={filterColumns}
+                  key={header.columnIndex}
+                  color={header.isSelected ? "blue" : "red"}
+                  className={!header.isSelected ? "with-opacity" : ""}
+                  onClick={() => toggleHeader(header.columnIndex)}
+                  icon
+                  labelPosition="right"
+                  circular
                 >
-                  Confirm columns
+                  {header.label}
+                  {header.isSelected ? (
+                    <Icon name="check" />
+                  ) : (
+                    <Icon name="close" />
+                  )}
                 </Button>
-              </div>
-            </>
-          )}
-        </div>
+              ))}
+            </div>
+
+            <div className="selection-headers-confirm">
+              <Button
+                color="green"
+                size="big"
+                disabled={selectionHeaders.every(h => !h.isSelected)}
+                onClick={filterColumns}
+              >
+                Confirm columns
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
