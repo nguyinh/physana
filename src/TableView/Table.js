@@ -14,7 +14,7 @@ import { FilterContext } from "./FilterContext";
 
 const cache = new CellMeasurerCache({
   defaultWidth: 150,
-  minWidth: 50,
+  minWidth: 150,
   fixedHeight: true
 });
 
